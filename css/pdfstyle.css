@@ -1,0 +1,17 @@
+table {
+    border-collapse: collapse;
+}
+
+table, td, th {
+    border: 1px solid black;
+}
+
+td.rotatedcell {
+	
+	text-rotate: 90;
+}
+
+th.rotatedcell {
+	
+	text-rotate: 90;
+}
