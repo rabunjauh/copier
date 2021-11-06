@@ -25,7 +25,6 @@ class m_login extends CI_Model {
 	public function login($input){
 		$username = htmlspecialchars($input['username']);
 		$password = $input['password'];
-		$password = $input['email'];
 		$query = $this->db->get_where('user',
 					[
 						'username' => $username,
@@ -33,8 +32,15 @@ class m_login extends CI_Model {
 					],
 				1);
 		$result = $query->row();
+
 		if ( $result ){
-			$this->session->set_userdata('username', $username);
+			$login_data = array(
+				'name' => $result->name,
+				'username' => $username,
+				'password' => $password,
+				'email' => $result->email
+			);
+			$this->session->set_userdata($login_data);
 			return true;
 		}
 	}

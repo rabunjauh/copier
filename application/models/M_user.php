@@ -53,10 +53,10 @@ class m_user extends CI_Model {
   	}
 
 	public function save_user($input){
-		// var_dump($input);die;
+		$info['name'] = strtolower(stripslashes($input['name']));
 		$info['username'] = strtolower(stripslashes($input['username']));
 		$info['email'] = strtolower(stripslashes($input['email']));
-		$info['password'] = $input['password'];
+		// $info['password'] = $input['password'];
 		// $confirm_password = $input['confirm_password'];
 		// $username = $info['username'];
 		
@@ -83,5 +83,184 @@ class m_user extends CI_Model {
 			return FALSE;
 		}
 		return true;
+	}
+
+	public function getUserByID($userID) {
+		return $this->db->get_where('user', array('id' => $userID))->row();
+	}
+
+	public function saveModifyUser($formInfo, $userID) {
+		$userdata = array(
+			'email' => $formInfo['email'],
+			'name' => $formInfo['name']
+		);
+		$this->db->set('email', $formInfo['email']);
+		$this->db->where('id', $userID);
+		$this->db->update('user', $userdata);
+		if ($this->db->affected_rows() == 1) {
+			return TRUE;
+		} else {
+			return FALSE;
+		}
+	}
+	
+	public function changePassword($new_password, $userID) {
+		$this->db->set('password', sha1($new_password));
+		$this->db->where('id', $userID);
+		$this->db->update('user');
+		if ($this->db->affected_rows() == 1) {
+			return TRUE;
+		} else {
+			return FALSE;
+		}
+	}
+
+	public function count_registration_data() {
+		$this->db->select('*');
+		$this->db->join('copier_id', 'wasco_fingerman.tblmas_employee.idemployee = copier_id.idemployee', 'right');
+		$this->db->from('wasco_fingerman.tblmas_employee');
+		
+		return $this->db->count_all_results();
+	}
+
+	public function get_registration_data($limit = 0, $offset = 0) {
+		$this->db->select('
+					wasco_fingerman.tblmas_employee.fingerid,
+					wasco_fingerman.tblmas_employee.employeename,
+					wasco_fingerman.tblfile_department.deptdesc,
+					wasco_fingerman.tblfile_position.positiondesc,
+					wasco_fingerman.tblmas_employee.email,
+					copier_id.sharp_password,
+					copier_id.others_password,
+		');
+		$this->db->join('wasco_fingerman.tblfile_department', 'wasco_fingerman.tblfile_department.iddept = wasco_fingerman.tblmas_employee.iddept', 'left');
+		$this->db->join('wasco_fingerman.tblfile_position', 'wasco_fingerman.tblfile_position.idposition = wasco_fingerman.tblmas_employee.idposition', 'left');
+		$this->db->join('copier_id', 'wasco_fingerman.tblmas_employee.fingerid = copier_id.idemployee', 'right');
+		
+		if ($limit != 0) {
+			$this->db->limit($limit, $offset);
+		}
+		$this->db->order_by('copier_id.idemployee', 'DESC');
+		return $this->db->get('wasco_fingerman.tblmas_employee')->result();
+	}
+
+	public function count_registration_data_search($post = []) {
+
+		$selSearch = $post['selSearch'];
+		$txtSearch = $post['txtSearch'];
+		$selDepartment = $post['selDepartment'];
+		if ($selSearch === '0') {
+			$this->db->like('wasco_fingerman.tblmas_employee.employeename', $txtSearch);
+			$this->db->or_like('wasco_fingerman.tblmas_employee.fingerid', $txtSearch);
+			$this->db->or_like('copier_id.others_password', $txtSearch);
+			$this->db->or_like('copier_id.sharp_password', $txtSearch);
+			$this->db->or_like('wasco_fingerman.tblfile_department.deptdesc', $txtSearch);
+			$this->db->or_like('wasco_fingerman.tblfile_position.positiondesc', $txtSearch);
+		} else {
+			if ($selSearch == 'employeename') {
+				$this->db->like('wasco_fingerman.tblmas_employee.employeename', $txtSearch);
+			} else if ($selSearch == 'idemployee') {
+				$this->db->like('wasco_fingerman.tblmas_employee.fingerid', $txtSearch);
+			} else if ($selSearch == 'other_password') {
+				$this->db->like('copier_id.others_password', $txtSearch);
+			} else if ($selSearch == 'sharp_password') {
+				$this->db->like('copier_id.sharp_password', $txtSearch);
+			} else if ($selSearch == 'positiondesc') {
+				$this->db->like('wasco_fingerman.tblfile_position.positiondesc', $txtSearch);
+			} else if ($selSearch == 'deptdesc') {
+				$this->db->where('wasco_fingerman.tblfile_department.iddept', $selDepartment);
+			} 
+		}
+
+		$this->db->select('*');
+		$this->db->join('wasco_fingerman.tblfile_department', 'wasco_fingerman.tblfile_department.iddept = wasco_fingerman.tblmas_employee.iddept', 'left');
+		$this->db->join('copier_id', 'wasco_fingerman.tblmas_employee.fingerid = copier_id.idemployee', 'right');
+		$this->db->from('wasco_fingerman.tblmas_employee');
+		
+		return $this->db->count_all_results();
+	}
+	
+	public function get_registration_data_search($limit = 0, $offset = 0, $post = []) {
+		$selSearch = $post['selSearch'];
+		$txtSearch = $post['txtSearch'];
+		$selDepartment = $post['selDepartment'];
+		if ($selSearch === '0') {
+			$this->db->like('wasco_fingerman.tblmas_employee.employeename', $txtSearch);
+			$this->db->or_like('wasco_fingerman.tblmas_employee.fingerid', $txtSearch);
+			$this->db->or_like('copier_id.others_password', $txtSearch);
+			$this->db->or_like('copier_id.sharp_password', $txtSearch);
+			$this->db->or_like('wasco_fingerman.tblfile_department.deptdesc', $txtSearch);
+			$this->db->or_like('wasco_fingerman.tblfile_position.positiondesc', $txtSearch);
+		} else {
+			if ($selSearch == 'employeename') {
+				$this->db->like('wasco_fingerman.tblmas_employee.employeename', $txtSearch);
+			} else if ($selSearch == 'idemployee') {
+				$this->db->like('wasco_fingerman.tblmas_employee.fingerid', $txtSearch);
+			} else if ($selSearch == 'other_password') {
+				$this->db->like('copier_id.others_password', $txtSearch);
+			} else if ($selSearch == 'sharp_password') {
+				$this->db->like('copier_id.sharp_password', $txtSearch);
+			} else if ($selSearch == 'positiondesc') {
+				$this->db->like('wasco_fingerman.tblfile_position.positiondesc', $txtSearch);
+			} else if ($selSearch == 'deptdesc') {
+				$this->db->where('wasco_fingerman.tblfile_department.iddept', $selDepartment);
+			} 
+		}
+
+		$this->db->select('
+					wasco_fingerman.tblmas_employee.fingerid,
+					copier_id.others_password,
+					copier_id.sharp_password,
+					wasco_fingerman.tblmas_employee.employeename,
+					wasco_fingerman.tblfile_department.deptdesc,
+					wasco_fingerman.tblfile_position.positiondesc,
+					wasco_fingerman.tblmas_employee.email	
+		');
+
+		$this->db->join('wasco_fingerman.tblfile_department', 'wasco_fingerman.tblfile_department.iddept = wasco_fingerman.tblmas_employee.iddept', 'left');
+		$this->db->join('wasco_fingerman.tblfile_position', 'wasco_fingerman.tblfile_position.idposition = wasco_fingerman.tblmas_employee.idposition', 'left');
+		$this->db->join('copier_id', 'wasco_fingerman.tblmas_employee.fingerid = copier_id.idemployee', 'right');
+		
+		if ($limit != 0) {
+			$this->db->limit($limit, $offset);
+		}
+		$this->db->order_by('copier_id.idemployee', 'DESC');
+		return $this->db->get('wasco_fingerman.tblmas_employee')->result();
+	}
+
+	public function get_department() {
+		return $this->db->get('wasco_fingerman.tblfile_department')->result();
+	}
+
+	function get_employee_by_id($employeeID) {
+		$this->db->select('
+					wasco_fingerman.tblmas_employee.fingerid,
+					copier_id.others_password,
+					copier_id.sharp_password,
+					wasco_fingerman.tblmas_employee.employeename,
+					wasco_fingerman.tblfile_department.deptdesc,
+					wasco_fingerman.tblfile_position.positiondesc,
+					wasco_fingerman.tblmas_employee.email	
+		');
+		$this->db->join('wasco_fingerman.tblfile_department', 'wasco_fingerman.tblfile_department.iddept = wasco_fingerman.tblmas_employee.iddept', 'left');
+		$this->db->join('wasco_fingerman.tblfile_position', 'wasco_fingerman.tblfile_position.idposition = wasco_fingerman.tblmas_employee.idposition', 'left');
+		$this->db->join('copier_id', 'wasco_fingerman.tblmas_employee.fingerid = copier_id.idemployee', 'right');
+		$this->db->where('wasco_fingerman.tblmas_employee.fingerid', $employeeID);
+		return $this->db->get('wasco_fingerman.tblmas_employee')->row();
+	}
+
+	public function get_other_users($username) {
+		$this->db->where_not_in('username', $username);
+		return $this->db->get('user')->result();
+	}
+
+	public function delete_user($employeeID) {
+		$this->db->where('id', $employeeID);
+		$this->db->delete('user');
+		if ($this->affected_row() == 1) {
+			return TRUE;
+		} else {
+			return FALSE;
+		}
 	}
 }	

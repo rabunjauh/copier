@@ -511,6 +511,10 @@ class Cemployee extends CI_Controller {
 			redirect(base_url() . 'cemployee/officeLocation');	
 		}
 	}
+
+	public function get_department_dependent() {
+		
+	}
 }
 
 	

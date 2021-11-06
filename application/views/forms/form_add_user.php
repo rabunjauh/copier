@@ -5,16 +5,16 @@
 		</div>
 	</div>
 	<?php 
-	if ( isset($konfirmasi_password_error) ){
-		echo $konfirmasi_password_error;
-	}
-
-	echo validation_errors();
-
+		echo validation_errors();
 	?>
 	<div class="row">
 		<div class="col-lg-6">
 			<?php echo form_open(base_url() . 'c_user/add_user'); ?>
+			<div class="form-group">
+				<label for="txt_name">Employee Name :</label>
+				<input type="text" name="txt_name" class="form-control" placeholder="Employee Name" required>
+			</div>
+
 			<div class="form-group">
 				<label for="txt_username">Username :</label>
 				<input type="text" name="txt_username" class="form-control" placeholder="Username" required>
