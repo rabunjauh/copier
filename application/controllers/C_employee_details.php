@@ -5,7 +5,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class C_employee_details extends CI_Controller {
 	public function __construct(){
 		parent::__construct();
-		$this->load->model('m_user');
+		$this->load->model('m_copier_registration');
 		if ( !$this->session->userdata('username') ){
 			redirect(base_url(). 'login');
 		}	
@@ -33,8 +33,8 @@ class C_employee_details extends CI_Controller {
 	    $config['first_tag_close'] = '</li>';
 	    $config['last_tag_open'] = '<li>';
 	    $config['last_tag_close'] = '</li>';
-		$config['base_url'] = base_url('c_user/copier_registration');
-		// $total_row = $this->m_user->count_registration_data();
+		$config['base_url'] = base_url('c_employee_details/copier_registration');
+		// $total_row = $this->m_copier_registration->count_registration_data();
 		$config['total_rows'] = 50;
 		// $config['total_rows'] = $total_row;
 		$config['per_page'] = 10;
@@ -46,7 +46,7 @@ class C_employee_details extends CI_Controller {
         }else{
             $page = 0;
         }
-		$data['copier_registrations'] = $this->m_user->get_registration_data($config['per_page'], $page);
+		$data['copier_registrations'] = $this->m_copier_registration->get_registration_data($config['per_page'], $page);
 		$data['header'] = $this->load->view('headers/head', '', TRUE);
 		$data['menu'] = '';
 		$data['navigation'] = $this->load->view('headers/navigation', '', TRUE);
@@ -75,8 +75,8 @@ class C_employee_details extends CI_Controller {
 	    $config['first_tag_close'] = '</li>';
 	    $config['last_tag_open'] = '<li>';
 	    $config['last_tag_close'] = '</li>';
-		$config['base_url'] = base_url('c_user/search');
-		$total_row = $this->m_user->count_registration_data_search($this->input->post());
+		$config['base_url'] = base_url('c_employee_details/search');
+		$total_row = $this->m_copier_registration->count_registration_data_search($this->input->post());
 		// $config['total_rows'] = 50;
 		$config['total_rows'] = $total_row;
 		$config['per_page'] = 10;
@@ -88,7 +88,7 @@ class C_employee_details extends CI_Controller {
         }else{
             $page = 0;
         }
-		$data['copier_registrations'] = $this->m_user->get_registration_data_search($config['per_page'], $page, $this->input->post());
+		$data['copier_registrations'] = $this->m_copier_registration->get_registration_data_search($config['per_page'], $page, $this->input->post());
 		$data['header'] = $this->load->view('headers/head', '', TRUE);
 		$data['menu'] = '';
 		$data['navigation'] = $this->load->view('headers/navigation', '', TRUE);
@@ -101,8 +101,8 @@ class C_employee_details extends CI_Controller {
 	public function load_registration_data($page = 0) {
 		$data = [];
 		$config = [];
-		$config['base_url'] = base_url('c_user/load_registration_data');
-		$total_row = $this->m_user->count_registration_data();
+		$config['base_url'] = base_url('c_employee_details/load_registration_data');
+		$total_row = $this->m_copier_registration->count_registration_data();
 		$config['total_rows'] = $total_row;
 		$config['per_page'] = 10;
 		$config['num_links'] = 5;
@@ -117,14 +117,14 @@ class C_employee_details extends CI_Controller {
         }else{
             $page = 0;
         }
-		$data['results'] = $this->m_user->get_registration_data($config['per_page'], $page);
+		$data['results'] = $this->m_copier_registration->get_registration_data($config['per_page'], $page);
 		$str_links = $this->pagination->create_links();
 		$data['links'] = explode('&nbsp;', $str_links);
 		echo json_encode($data);
 	}
 
 	public function send_email_employee_details($employeeID) {
-		$employee = $this->m_user->get_employee_by_id($employeeID);
+		$employee = $this->m_copier_registration->get_employee_by_id($employeeID);
 		$this->load->library('email');
 		// $data = [];
 		// $data['recipient'] = $employee->email;
@@ -173,7 +173,7 @@ class C_employee_details extends CI_Controller {
 		$this->email->from($data['sender']);
 		// $this->email->to($data['recipient']);
         $this->email->to($employee->email);
-        $other_users = $this->m_user->get_other_users($this->session->userdata('username'));
+        $other_users = $this->m_copier_registration->get_other_users($this->session->userdata('username'));
         $email = array();
         foreach ($other_users as $user) {
             array_push($email, $user->email);    
@@ -188,17 +188,17 @@ class C_employee_details extends CI_Controller {
 		if ($this->email->send()) {
 			$message = '<div class="alert alert-success">Email sent to ' . $data['recipient'] . ' successfully</div>';
             $this->session->set_flashdata('message', $message);
-            redirect(base_url('c_user/copier_registration'));
+            redirect(base_url('c_employee_details/copier_registration'));
 		} else {
 			$message = '<div class="alert alert-danger">The email was not sent!</div>';
             $this->session->set_flashdata('message', $message);
-            redirect(base_url('c_user/copier_registration'));
+            redirect(base_url('c_employee_details/copier_registration'));
 		}
 	}
 	
 	public function send_email_sharp_details($employeeID) {
 		$this->load->library('email');
-		$employee = $this->m_user->get_employee_by_id($employeeID);
+		$employee = $this->m_copier_registration->get_employee_by_id($employeeID);
 		// $data = [];
 		// $data['recipient'] = 'ptwei.mis@wascoenergy.com';
 		// $data['sender'] = 'mustafa.m@wascoenergy.com';
@@ -246,7 +246,7 @@ class C_employee_details extends CI_Controller {
 		$this->email->from($data['sender']);
 		// $this->email->to('mustafa.m@wascoenergy.com');
 		$this->email->to($employee->email);
-        $other_users = $this->m_user->get_other_users($this->session->userdata('username'));
+        $other_users = $this->m_copier_registration->get_other_users($this->session->userdata('username'));
         $email = array();
         foreach ($other_users as $user) {
             array_push($email, $user->email);    
@@ -260,16 +260,16 @@ class C_employee_details extends CI_Controller {
 		if ($this->email->send()) {
 			$message = '<div class="alert alert-success">Email sent to ' . $data['recipient'] . ' successfully</div>';
             $this->session->set_flashdata('message', $message);
-            redirect(base_url('c_user/copier_registration'));
+            redirect(base_url('c_employee_details/copier_registration'));
 		} else {
 			$message = '<div class="alert alert-danger">The email was not sent!</div>';
             $this->session->set_flashdata('message', $message);
-            redirect(base_url('c_user/copier_registration'));
+            redirect(base_url('c_employee_details/copier_registration'));
 		}
 	}
 
 	public function get_department() {
-		$departments = $this->m_user->get_department();
+		$departments = $this->m_copier_registration->get_department();
 		$option = '';
 		foreach($departments as $department) {
 			$option .= '<option value=' . $department->iddept . '>' . $department->deptdesc . '</option>';
