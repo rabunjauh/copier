@@ -52,7 +52,7 @@ class C_user extends CI_Controller {
 	public function add_user(){
 		if ( $this->input->post() ){
 			$this->load->library('form_validation');
-			$this->load->validation->set_rules('txt_name', 'Name', 'required|max_length[100]');
+			$this->form_validation->set_rules('txt_name', 'Name', 'required|max_length[100]');
 			$this->form_validation->set_rules('txt_username', 'Username', 'required|is_unique[user.username]|max_length[100]');
 			$this->form_validation->set_rules('txt_email', 'Email', 'required|is_unique[user.email]|max_length[30]');
 			// $this->form_validation->set_rules('txt_email', 'Email', 'required');
@@ -155,11 +155,11 @@ class C_user extends CI_Controller {
 		if ($this->m_user->delete_user($employeeID)) {
 			$message = '<div class="alert alert-success">User Deleted!</div>';
             $this->session->set_flashdata('message', $message);
-            redirect(base_url('c_user/copier_registration'));
+            redirect(base_url('c_user'));
 		} else {
 			$message = '<div class="alert alert-danger">User delete failed!</div>';
             $this->session->set_flashdata('message', $message);
-            redirect(base_url('c_user/copier_registration'));
+            redirect(base_url('c_user'));
 		}
 	}
 }

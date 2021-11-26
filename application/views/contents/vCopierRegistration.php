@@ -6,7 +6,10 @@
 	</div>
 	<div class="row">
 		<div class="col-lg-6">			
-			<a href="<?php echo base_url() . 'c_user/add_user' ?>" class="btn btn-primary my-1">Register User</a>
+			<a href="<?php echo base_url('c_employee_details/register_password'); ?>" class="btn btn-primary my-1">Register User</a>
+			<button type="button" class="btn btn-warning" data-toggle="modal" data-target="#myModal">
+                Form Upload Register
+            </button>
 		</div>
 		<div class="col-lg-6">			
             <?=form_open(base_url() . 'c_employee_details/search'); ?>
@@ -18,7 +21,7 @@
                         <option value="idemployee">Employee ID</option>
                         <option value="other_password">Other Printer Password</option>
                         <option value="sharp_password">Sharp Printer Password</option>
-                        <option value="deptdesc">Department</option>
+                        <!-- <option value="iddept">Department</option> -->
                         <option value="positiondesc">Position</option>
                         <option value="email">Email</option>
                     </select>						
@@ -35,50 +38,67 @@
 	<div class="row">
 		<div class="col-lg-12">
             <table class="table table-bordered">
-                <tr>
-                    <td>No</td>
-                    <td>Employee ID</td>
-                    <td>Sharp Password</td>
-                    <td>Other Password</td>
-                    <td>Name</td>
-                    <td>Department</td>
-                    <td>Job Title</td>
-                    <td>Email</td>
-                    <td colspan="4">Action</td>
-                </tr>
+                <thead>
+                    <tr>
+                        <td>No</td>
+                        <td>Employee ID</td>
+                        <td>Sharp Password</td>
+                        <td>Other Password</td>
+                        <td>Name</td>
+                        <td>Department</td>
+                        <td>Job Title</td>
+                        <td>Email</td>
+                        <td colspan="4">Action</td>
+                    </tr>
+                </thead>
 		
-                <?php
-                    if ($copier_registrations) {
-                        $no = 1;
-                        foreach ($copier_registrations as $copier_registration): 
-                            
-                ?>
-                            <tr>
-                                <td><?php echo $no; ?></td>
-                                <td><?php echo $copier_registration->fingerid; ?></td>
-                                <td><?php echo $copier_registration->sharp_password; ?></td>
-                                <td><?php echo $copier_registration->others_password; ?></td>
-                                <td><?php echo $copier_registration->employeename; ?></td>
-                                <td><?php echo $copier_registration->deptdesc; ?></td>
-                                <td><?php echo $copier_registration->positiondesc; ?></td>
-                                <td><?php echo $copier_registration->email; ?></td>
-                                <td><a href="<?= base_url('c_employee_details/send_email_employee_details/' . $copier_registration->fingerid); ?>"><i class="fa fa-user fa-2x"></i></a></td>
-                                <td><a href="<?= base_url('c_employee_details/send_email_sharp_details/' . $copier_registration->fingerid); ?>"><i class="fa fa-print fa-2x"></i></a></td>
-                                <td><a href=""><i class="fa fa-edit fa-2x"></i></a></td>
-                            </tr>
-                            </form>
-                <?php $no++; ?>
-                <?php   
-                            
-                            
-                            echo form_close();
-                        endforeach;
-                    } else {
-                ?>
-                        <tr><td colspan="8">No data to display</td></tr>
-                <?php
-                    }
-                ?>
+                <tbody>
+                    <?php
+                        if ($copier_registrations) {
+                            $no = 1;
+                            foreach ($copier_registrations as $copier_registration): 
+                                
+                    ?>
+                                <tr>
+                                    <td><?php echo $no; ?></td>
+                                    <td><?php echo $copier_registration->idemployee; ?></td>
+                                    <td><?php echo $copier_registration->sharp_password; ?></td>
+                                    <td><?php echo $copier_registration->others_password; ?></td>
+                                    <td><?php echo $copier_registration->employeename; ?></td>
+                                    <td><?php echo $copier_registration->deptdesc; ?></td>
+                                    <td><?php echo $copier_registration->positiondesc; ?></td>
+                                    <td><?php echo $copier_registration->email; ?></td>
+                                    <td><a href="<?= base_url('c_employee_details/send_email_employee_details/' . $copier_registration->id); ?>"><i class="fa fa-user fa-2x"></i></a></td>
+                                    <td><a href="<?= base_url('c_employee_details/send_email_sharp_details/' . $copier_registration->id); ?>"><i class="fa fa-print fa-2x"></i></a></td>
+                                    <td><a href="<?= base_url('c_employee_details/modify_copier_registration/' . $copier_registration->id); ?>"><i class="fa fa-edit fa-2x"></i></a></td>
+                                </tr>
+                                </form>
+                    <?php $no++; ?>
+                    <?php   
+                                
+                                
+                                echo form_close();
+                            endforeach;
+                        } else {
+                    ?>
+                            <tr><td colspan="8">No data to display</td></tr>
+                    <?php
+                        }
+                    ?>
+                </tbody>
+                <tfoot>
+                <tr>
+                        <td>No</td>
+                        <td>Employee ID</td>
+                        <td>Sharp Password</td>
+                        <td>Other Password</td>
+                        <td>Name</td>
+                        <td>Department</td>
+                        <td>Job Title</td>
+                        <td>Email</td>
+                        <td colspan="4">Action</td>
+                    </tr>
+                </tfoot>
             </table>
             <?php echo $this->pagination->create_links(); ?>
 	    </div>
@@ -88,40 +108,69 @@
 </div>	
 
  <!-- Modal -->
- <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
-      </div>
-      <div class="modal-body">
-        ...
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">Form Upload Register</h4>
+            </div>
+
+            <div class="modal-body">
+                <a href="<?php echo base_url('c_employee_details/register_password'); ?>" class="btn btn-warning my-1">Download Template</a>
+                <hr>
+                <?php
+                    $input_file_data = array(
+                        'type' => 'file',
+                        'name' => 'file_upload',
+                        'id' => 'file_upload',
+                        'class' => 'form-control'
+                    );
+
+                    $submit_data = array(
+                        'type' => 'submit',
+                        'name' => 'submit',
+                        'class' => 'btn btn-warning',
+                        'value' => 'Upload'
+                    );
+
+                    echo form_open_multipart('c_employee_details/upload_register'); 
+                
+                    echo '<div class="form-group">';
+                    echo form_input($input_file_data);
+                    echo '</div>';
+                    
+                    echo '<div class="form-group">';
+                    echo form_submit($submit_data);
+                    echo '</div>';
+                    
+                    echo form_close(); 
+                ?>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 <script>
+    //Select for search feature 
     const selDepartment = document.getElementById('selDepartment');
     selDepartment.style.display = 'none'; 
 
     const selSearch = document.getElementById('selSearch');
     selSearch.addEventListener('change', function(e){
         const txtSearch = document.getElementById('txtSearch');
-        if (this.value == 'deptdesc') {
+        if (this.value == 'iddept') {
             txtSearch.style.display = 'none';
             selDepartment.style.display = 'inline'; 
         } else {
             txtSearch.style.display = 'inline';
             selDepartment.style.display = 'none'; 
         }
-        dependent('<?= base_url('c_employee_details/get_department') ?>', selDepartment);
+        getSelect('<?= base_url('c_employee_details/get_department') ?>', selDepartment);
     });
-    function dependent(url, targetElement) {
+    function getSelect(url, targetElement) {
         let xhttp = new XMLHttpRequest();
         xhttp.open('GET', url);
         xhttp.onreadystatechange = function (){

@@ -16,6 +16,7 @@
 <!-- jQuery 2.0.3 -->
 <script src="<?=base_url('assets/js/jquery-2.0.3.min.js') ?>"></script>
 <script src="<?=base_url('assets/js/script.js') ?>"></script>
+<script src="<?=base_url('assets/bootstrap-3.2.0/js/bootstrap.min.js') ?>"></script>
 
 <!-- Print -->
 <script type="text/javascript">

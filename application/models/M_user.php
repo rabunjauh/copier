@@ -28,28 +28,40 @@ class m_user extends CI_Model {
 		return $count;
 	}
 
+	// public function user_list($limit, $offset){
+	//     $sql = "SELECT * FROM user";
+
+	//     // $sql = "SELECT tblmas_employee.idemployee, tblmas_employee.employeeno, tblmas_employee.employeename, tblfile_department.deptdesc, tblfile_position.positiondesc, tblfile_position.level 
+	//    	// 		FROM tblmas_employee 
+	//     // 		LEFT JOIN tblfile_department 
+	//     // 		ON tblmas_employee.iddept = tblfile_department.iddept 
+	//     // 		LEFT JOIN tblfile_position 
+	//     // 		ON tblmas_employee.idposition = tblfile_position.idposition 
+	//     // 		WHERE tblmas_employee.employeename like '%hidayat%'
+	//     // 		ORDER BY tblmas_employee.idemployee DESC";
+
+	//     if ($limit) {
+	//       if(!$offset){
+	//         $sql .= " LIMIT $limit";
+	//       }else{
+	//         $sql .= " LIMIT $limit OFFSET $offset";
+	//       }
+	//     }
+	    
+	//     $query = $this->db->query($sql);
+	//     return $query->result();
+  	// }
+	
 	public function user_list($limit, $offset){
-	    $sql = "SELECT * FROM user";
-
-	    // $sql = "SELECT tblmas_employee.idemployee, tblmas_employee.employeeno, tblmas_employee.employeename, tblfile_department.deptdesc, tblfile_position.positiondesc, tblfile_position.level 
-	   	// 		FROM tblmas_employee 
-	    // 		LEFT JOIN tblfile_department 
-	    // 		ON tblmas_employee.iddept = tblfile_department.iddept 
-	    // 		LEFT JOIN tblfile_position 
-	    // 		ON tblmas_employee.idposition = tblfile_position.idposition 
-	    // 		WHERE tblmas_employee.employeename like '%hidayat%'
-	    // 		ORDER BY tblmas_employee.idemployee DESC";
-
 	    if ($limit) {
-	      if(!$offset){
-	        $sql .= " LIMIT $limit";
-	      }else{
-	        $sql .= " LIMIT $limit OFFSET $offset";
-	      }
+	    	if(!$offset){
+	    		$this->db->limit($limit);
+	    	}else{
+	    		$this->db->limit($limit, $offset);
+	    	}
 	    }
 	    
-	    $query = $this->db->query($sql);
-	    return $query->result();
+		return $this->db->get('user')->result();
   	}
 
 	public function save_user($input){
@@ -117,15 +129,15 @@ class m_user extends CI_Model {
 
 	
 
-	public function get_other_users($username) {
-		$this->db->where_not_in('username', $username);
-		return $this->db->get('user')->result();
-	}
+	// public function get_users($username) {
+	// 	$this->db->where_not_in('username', $username);
+	// 	return $this->db->get('user')->result();
+	// }
 
 	public function delete_user($employeeID) {
 		$this->db->where('id', $employeeID);
 		$this->db->delete('user');
-		if ($this->affected_row() == 1) {
+		if ($this->db->affected_rows() == 1) {
 			return TRUE;
 		} else {
 			return FALSE;
