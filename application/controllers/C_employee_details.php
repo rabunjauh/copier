@@ -39,9 +39,9 @@ class C_employee_details extends CI_Controller {
 	    $config['last_tag_open'] = '<li>';
 	    $config['last_tag_close'] = '</li>';
 		$config['base_url'] = base_url('c_employee_details/index');
-		// $total_row = $this->m_copier_registration->count_registration_data();
-		$config['total_rows'] = 50;
-		// $config['total_rows'] = $total_row;
+		$total_row = $this->m_copier_registration->count_registration_data();
+		// $config['total_rows'] = 50;
+		$config['total_rows'] = $total_row;
 		$config['per_page'] = 10;
 		$config['num_links'] = 5;
         $config["uri_segment"] = 3;
@@ -125,22 +125,26 @@ class C_employee_details extends CI_Controller {
     public function register_password() {
 		if ($this->input->post()) {
 			$this->load->library('form_validation');
-			$this->form_validation->set_rules('txt_idemployee', 'Finger ID', 'required|is_unique[copier_id.idemployee]');
+			$this->form_validation->set_rules('txt_others_password', 'Others Password', 'required|is_unique[copier_id.others_password]');
+			$this->form_validation->set_rules('txt_idemployee', 'Employee ID', 'required|is_unique[copier_id.idemployee]');
 			$this->form_validation->set_rules('txt_employee_name', 'Employee Name', 'required');
 			$this->form_validation->set_rules('txt_employee_email', 'Email', 'required');
 
 			if ($this->form_validation->run()) {
-				$form_info['txt_sharp_password'] = $this->input->post('txt_sharp_password', TRUE);
 				$form_info['txt_others_password'] = $this->input->post('txt_others_password', TRUE);
 				$form_info['txt_idemployee'] = $this->input->post('txt_idemployee', TRUE);
-				if ($this->m_employee->save_register($form_info)) {
+				$form_info['txt_employee_name'] = $this->input->post('txt_employee_name', TRUE);
+				$form_info['sel_dept'] = $this->input->post('sel_dept', TRUE);
+				$form_info['sel_position'] = $this->input->post('sel_position', TRUE);
+				$form_info['txt_employee_email'] = $this->input->post('txt_employee_email', TRUE);
+				if ($this->m_copier_registration->save_register($form_info)) {
 					$message = '<div class="alert alert-success">Success</div>';
 					$this->session->set_flashdata('message', $message);
-					redirect(base_url('c_employee'));
+					redirect(base_url('c_employee_details'));
 				} else {
 					$message = '<div class="alert alert-danger">Failed</div>';
 					$this->session->set_flashdata('message', $message);
-					redirect(base_url('c_employee/register_password'));
+					redirect(base_url('c_employee_details/register_password'));
 				}
 			}
 		}
@@ -156,16 +160,46 @@ class C_employee_details extends CI_Controller {
         $this->load->view('main', $data);
     }
 
-    public function modify_copier_registration($employeeID) {
-        $data['copier_registration'] = $this->m_copier_registration->get_employee_by_id($employeeID);
+    public function modify_copier_registration($id) {
+		
+        $data['copier_registration'] = $this->m_copier_registration->get_registration_by_id($id);
         $data['header'] = $this->load->view('headers/head', '', TRUE);
         $data['menu'] = '';
         $data['navigation'] = $this->load->view('headers/navigation', '', TRUE);
         $data['cover'] = $this->load->view('headers/cover', '', TRUE);
+		$data['departments'] = $this->m_employee->get_department();
+		$data['positions'] = $this->m_employee->get_position();
         $data['content'] = $this->load->view('forms/form_modify_copier_registration', $data, TRUE);
         $data['footer'] = $this->load->view('footers/footer', '', TRUE);
         $this->load->view('main', $data);
     }
+
+	public function update_copier_registration() {
+		// $this->load->library('form_validation');
+		// $this->form_validation->set_rules('txt_other_password', 'Others Password', 'required');
+		// $this->form_validation->set_rules('txt_employeeid', 'Employee ID', 'required');
+		// $this->form_validation->set_rules('txt_employeename', 'Employee Name', 'required');
+		// $this->form_validation->set_rules('txt_email', 'Email', 'required');
+
+		// if ($this->form_validation->run()) {
+			$id = $this->input->post('copier_id', TRUE);
+			$form_info['txt_other_password'] = $this->input->post('txt_other_password', TRUE);
+			$form_info['txt_employeeid'] = $this->input->post('txt_employeeid', TRUE);
+			$form_info['txt_employeename'] = $this->input->post('txt_employeename', TRUE);
+			$form_info['sel_dept'] = $this->input->post('sel_dept', TRUE);
+			$form_info['sel_position'] = $this->input->post('sel_position', TRUE);
+			$form_info['txt_email'] = $this->input->post('txt_email', TRUE);
+			if ($this->m_copier_registration->update_register($form_info, $id)) {
+				$message = '<div class="alert alert-success">Success</div>';
+				$this->session->set_flashdata('message', $message);
+				redirect(base_url('c_employee_details/'));
+			} else {
+				$message = '<div class="alert alert-danger">Failed</div>';
+				$this->session->set_flashdata('message', $message);
+				redirect(base_url('c_employee_details/modify_copier_registration/' . $id));
+			}
+		// }
+	}
 	
 	public function load_registration_data($page = 0) {
 		$data = [];
@@ -341,15 +375,15 @@ class C_employee_details extends CI_Controller {
 	// 	}
 	// }
 	
-    public function send_email_employee_details($employeeID) {
-		$employee = $this->m_copier_registration->get_employee_by_id($employeeID);
+    public function send_email_employee_details($id) {
+		$employee = $this->m_copier_registration->get_registration_by_id($id);
 		$this->load->library('email');
         $sender = 'no-reply@wascoenergy.com';
         $pass = 'password.88';
 		$data = [];
 		$data['recipient'] = $employee->email;
 		$data['sender'] = 'no-reply@wascoenergy.com';
-		$data['idemployee'] = $employee->fingerid;
+		$data['idemployee'] = $employee->idemployee;
 		$data['employeename'] = $employee->employeename;
 		$data['deptdesc'] = $employee->deptdesc;
 		$data['positiondesc'] = $employee->positiondesc;
@@ -384,7 +418,7 @@ class C_employee_details extends CI_Controller {
 		$this->email->subject('Employee Details');
 		$this->email->attach('C:\xampp\htdocs\copier\assets\attachment\Guide-to-Create-Timesheet.pdf');
 		$this->email->message($this->load->view('contents/message_body', $data, TRUE));
-        // var_dump($this->email);
+        var_dump($this->email);
         // var_dump($this->email->send());die;
 		
 		if ($this->email->send()) {
@@ -402,7 +436,7 @@ class C_employee_details extends CI_Controller {
 		$this->load->library('email');
         $sender = 'no-reply@wascoenergy.com';
         $pass = 'password.88';
-		$employee = $this->m_copier_registration->get_employee_by_id($employeeID);
+		$employee = $this->m_employee->get_employee_by_id($employeeID);
 		$data = [];
 		$data['recipient'] = $employee->email;
 		$data['sender'] = $sender;
@@ -482,6 +516,7 @@ class C_employee_details extends CI_Controller {
     //     $data['footer'] = $this->load->view('footers/footer', '', TRUE);
     //     $this->load->view('main', $data);
 	// }
+	
 
 	public function upload_register() {
 		$departments = $this->m_employee->get_department();

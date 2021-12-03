@@ -31,8 +31,27 @@ class m_copier_registration extends CI_Model {
         if ($limit != 0) {
             $this->db->limit($limit, $offset);
         }
-        $this->db->order_by('c.idemployee', 'DESC');
+        $this->db->order_by('c.id', 'DESC');
         return $this->db->get('copier_id c')->result();
+    }
+
+    function get_registration_by_id($id) {
+        $this->db->select('
+					c.id,
+					c.idemployee,
+					c.employeename,
+					c.iddept,
+					c.idposition,
+					c.email,
+					c.sharp_password,
+					c.others_password,
+					td.deptdesc,
+					tp.positiondesc
+        ');
+        $this->db->join('tblfile_department td', 'td.iddept = c.iddept', 'left');
+        $this->db->join('tblfile_position tp', 'tp.idposition = c.idposition', 'left');
+        $this->db->where('c.id', $id);
+        return $this->db->get('copier_id c')->row();
     }
     
     public function count_registration_data_search($selSearch = false, $txtSearch = false) {
@@ -71,12 +90,12 @@ class m_copier_registration extends CI_Model {
         // var_dump('model->selSearch: ' . $selSearch . '| txtSearch: ' . $txtSearch);
         if ($selSearch === '0') {
             // if ($txtSearch) {
-                $this->db->like('tblmas_employee.employeename', $txtSearch);
-                $this->db->or_like('tblmas_employee.fingerid', $txtSearch);
-                $this->db->or_like('copier_id.others_password', $txtSearch);
-                $this->db->or_like('copier_id.sharp_password', $txtSearch);
-                $this->db->or_like('tblfile_department.deptdesc', $txtSearch);
-                $this->db->or_like('tblfile_position.positiondesc', $txtSearch);
+                $this->db->like('c.employeename', $txtSearch);
+                $this->db->or_like('c.idemployee', $txtSearch);
+                $this->db->or_like('c.others_password', $txtSearch);
+                $this->db->or_like('c.sharp_password', $txtSearch);
+                $this->db->or_like('td.deptdesc', $txtSearch);
+                $this->db->or_like('tp.positiondesc', $txtSearch);
             // }
         // } else if ($selSearch == 'employeename') {
         //     $this->db->like('tblmas_employee.employeename', $txtSearch);
@@ -93,26 +112,26 @@ class m_copier_registration extends CI_Model {
         } 
     
         $this->db->select('
-                    tblmas_employee.fingerid,
-                    copier_id.others_password,
-                    copier_id.sharp_password,
-                    tblmas_employee.employeename,
-                    tblfile_department.deptdesc,
-                    tblfile_position.positiondesc,
-                    tblmas_employee.email	
+                    c.id,
+                    c.idemployee,
+                    c.others_password,
+                    c.sharp_password,
+                    c.employeename,
+                    td.deptdesc,
+                    tp.positiondesc,
+                    c.email	
         ');
     
-        $this->db->join('tblfile_department', 'tblfile_department.iddept = tblmas_employee.iddept', 'left');
-        $this->db->join('tblfile_position', 'tblfile_position.idposition = tblmas_employee.idposition', 'left');
-        $this->db->join('copier_id', 'tblmas_employee.fingerid = copier_id.idemployee', 'right');
+        $this->db->join('tblfile_department td', 'td.iddept = c.iddept', 'left');
+        $this->db->join('tblfile_position tp', 'tp.idposition = c.idposition', 'left');
         
         if (!$offset){
             $this->db->limit($limit);
         } else {
             $this->db->limit($limit, $offset);
         }
-        $this->db->order_by('copier_id.idemployee', 'DESC');
-        return $this->db->get('tblmas_employee')->result();
+        $this->db->order_by('c.idemployee', 'DESC');
+        return $this->db->get('copier_id c')->result();
     }
 
     public function upload_register($data_upload) {
@@ -124,22 +143,7 @@ class m_copier_registration extends CI_Model {
         }
     }
     
-    function get_employee_by_id($employeeID) {
-        $this->db->select('
-                    tblmas_employee.fingerid,
-                    copier_id.others_password,
-                    copier_id.sharp_password,
-                    tblmas_employee.employeename,
-                    tblfile_department.deptdesc,
-                    tblfile_position.positiondesc,
-                    tblmas_employee.email	
-        ');
-        $this->db->join('tblfile_department', 'tblfile_department.iddept = tblmas_employee.iddept', 'left');
-        $this->db->join('tblfile_position', 'tblfile_position.idposition = tblmas_employee.idposition', 'left');
-        $this->db->join('copier_id', 'tblmas_employee.fingerid = copier_id.idemployee', 'right');
-        $this->db->where('tblmas_employee.fingerid', $employeeID);
-        return $this->db->get('tblmas_employee')->row();
-    }
+    
 
     public function get_new_employee() {
         $this->db->where('email !=', '');
@@ -193,5 +197,38 @@ class m_copier_registration extends CI_Model {
                 $this->db->insert($tblname, $different);
             }
         }
+    }
+
+    public function save_register($input) {
+		$info['idemployee'] = html_escape($input['txt_idemployee']);
+		$info['others_password'] = html_escape($input['txt_others_password']);
+		$info['sharp_password'] = '1' . $info['others_password'];
+		$info['employeename'] = html_escape($input['txt_employee_name']);
+		$info['iddept'] = $input['sel_dept'];
+		$info['idposition'] = $input['sel_position'];
+		$info['email'] = html_escape($input['txt_employee_email']) . '@wascoenergy.com';
+		$this->db->insert('copier_id', $info);
+		if ($this->db->affected_rows() == 1) {
+			return TRUE;
+		} else {
+			return FALSE;
+		}
+	}
+
+    public function update_register($input, $id) {
+        $info['idemployee'] = html_escape($input['txt_employeeid']);
+		$info['others_password'] = html_escape($input['txt_other_password']);
+		$info['sharp_password'] = '1' . $info['others_password'];
+		$info['employeename'] = html_escape($input['txt_employeename']);
+		$info['iddept'] = $input['sel_dept'];
+		$info['idposition'] = $input['sel_position'];
+		$info['email'] = html_escape($input['txt_email']) . '@wascoenergy.com';
+        $this->db->where('id', $id);
+		$this->db->update('copier_id', $info);
+		if ($this->db->affected_rows() == 1) {
+			return TRUE;
+		} else {
+			return FALSE;
+		}
     }
 }
