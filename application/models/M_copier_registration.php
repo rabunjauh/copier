@@ -8,8 +8,7 @@ class m_copier_registration extends CI_Model {
     
     public function count_registration_data() {
         $this->db->select('*');
-        $this->db->join('copier_id', 'tblmas_employee.idemployee = copier_id.idemployee', 'right');
-        $this->db->from('tblmas_employee');
+        $this->db->from('copier_id');
         
         return $this->db->count_all_results();
     }
@@ -31,7 +30,7 @@ class m_copier_registration extends CI_Model {
         if ($limit != 0) {
             $this->db->limit($limit, $offset);
         }
-        $this->db->order_by('c.id', 'DESC');
+        $this->db->order_by('c.others_password', 'DESC');
         return $this->db->get('copier_id c')->result();
     }
 
@@ -57,12 +56,12 @@ class m_copier_registration extends CI_Model {
     public function count_registration_data_search($selSearch = false, $txtSearch = false) {
     
         if ($selSearch == '0') {
-            $this->db->like('tblmas_employee.employeename', $txtSearch);
-            $this->db->or_like('tblmas_employee.fingerid', $txtSearch);
-            $this->db->or_like('copier_id.others_password', $txtSearch);
-            $this->db->or_like('copier_id.sharp_password', $txtSearch);
-            $this->db->or_like('tblfile_department.deptdesc', $txtSearch);
-            $this->db->or_like('tblfile_position.positiondesc', $txtSearch);
+            $this->db->like('c.employeename', $txtSearch);
+            $this->db->or_like('c.idemployee', $txtSearch);
+            $this->db->or_like('c.others_password', $txtSearch);
+            $this->db->or_like('c.sharp_password', $txtSearch);
+            $this->db->or_like('td.deptdesc', $txtSearch);
+            $this->db->or_like('tp.positiondesc', $txtSearch);
         // } else if ($selSearch == 'employeename') {
         //     $this->db->like('tblmas_employee.employeename', $txtSearch);
         // } else if ($selSearch == 'idemployee') {
@@ -78,10 +77,9 @@ class m_copier_registration extends CI_Model {
         } 
     
         $this->db->select('*');
-        $this->db->join('tblfile_department', 'tblfile_department.iddept = tblmas_employee.iddept', 'left');
-        $this->db->join('tblfile_position', 'tblfile_position.idposition = tblmas_employee.idposition', 'left');
-        $this->db->join('copier_id', 'tblmas_employee.fingerid = copier_id.idemployee', 'right');
-        $this->db->from('tblmas_employee');
+        $this->db->join('tblfile_department td', 'td.iddept = c.iddept', 'left');
+        $this->db->join('tblfile_position tp', 'tp.idposition = c.idposition', 'left');
+        $this->db->from('copier_id c');
         
         return $this->db->count_all_results();
     }

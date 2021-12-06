@@ -123,12 +123,6 @@
             <td>:</td>
             <td>password.1</td>
         </tr>
-        <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td><a href="\\192.168.40.58\MIS-Guide\Create_Timesheet.pdf">Guide to Create Timesheet</a></td>
-        </tr>
         <tr class="head">
             <td>C</td>
             <td colspan="3"><strong>Printer Access</strong></td>

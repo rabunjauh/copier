@@ -381,7 +381,7 @@ class C_employee_details extends CI_Controller {
         $sender = 'no-reply@wascoenergy.com';
         $pass = 'password.88';
 		$data = [];
-		$data['recipient'] = $employee->email;
+		$data['recipient'] = $employee->email . '@wascoenergy.com';
 		$data['sender'] = 'no-reply@wascoenergy.com';
 		$data['idemployee'] = $employee->idemployee;
 		$data['employeename'] = $employee->employeename;
@@ -405,7 +405,7 @@ class C_employee_details extends CI_Controller {
 
 		$this->email->from($sender, 'WEI MIS');
 		// $this->email->to($data['recipient']);
-        $this->email->to($employee->email);
+        $this->email->to($employee->email . '@wascoenergy.com');
         // $other_users = $this->m_user->get_other_users($this->session->userdata('username'));
         // $email = array();
         // foreach ($other_users as $user) {
@@ -418,8 +418,6 @@ class C_employee_details extends CI_Controller {
 		$this->email->subject('Employee Details');
 		$this->email->attach('C:\xampp\htdocs\copier\assets\attachment\Guide-to-Create-Timesheet.pdf');
 		$this->email->message($this->load->view('contents/message_body', $data, TRUE));
-        var_dump($this->email);
-        // var_dump($this->email->send());die;
 		
 		if ($this->email->send()) {
 			$message = '<div class="alert alert-success">Email sent to ' . $data['recipient'] . ' successfully</div>';
@@ -432,15 +430,15 @@ class C_employee_details extends CI_Controller {
 		}
 	}
 	
-    public function send_email_sharp_details($employeeID) {
+    public function send_email_sharp_details($id) {
 		$this->load->library('email');
         $sender = 'no-reply@wascoenergy.com';
         $pass = 'password.88';
-		$employee = $this->m_employee->get_employee_by_id($employeeID);
+		$employee = $this->m_copier_registration->get_registration_by_id($id);
 		$data = [];
-		$data['recipient'] = $employee->email;
+		$data['recipient'] = $employee->email . '@wascoenergy.com';
 		$data['sender'] = $sender;
-		$data['idemployee'] = $employee->fingerid;
+		$data['idemployee'] = $employee->idemployee;
 		$data['employeename'] = $employee->employeename;
 		$data['deptdesc'] = $employee->deptdesc;
 		$data['positiondesc'] = $employee->positiondesc;
@@ -464,7 +462,7 @@ class C_employee_details extends CI_Controller {
 
 		$this->email->from($sender, 'WEI MIS');
 		// $this->email->to('mustafa.m@wascoenergy.com');
-		$this->email->to($employee->email);
+		$this->email->to($employee->email . '@wascoenergy.com');
         // $other_users = $this->m_user->get_other_users($this->session->userdata('username'));
         // $email = array();
         // foreach ($other_users as $user) {

@@ -62,8 +62,9 @@
             'name' => 'txt_email',
             'id' => 'txt_email',
             'class' => 'form-control',
-            'value'  => substr($copier_registration->email, 0, -16)
+            'value'  => $copier_registration->email
         );
+
         
         $copier_id = array(
             'type' => 'hidden',
