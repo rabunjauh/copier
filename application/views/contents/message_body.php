@@ -107,7 +107,7 @@
             <td>Timesheet</td>
             <td>:</td>
             <td>
-                <a href="http://hrms.wascoenergy.com">Outside Office </a> /
+                <a href="192.168.40.80/hrms">Inside Office </a> /
                 <a href="http://hrms.wascoenergy.com">Outside Office </a> 
             </td>
         </tr>

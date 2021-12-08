@@ -6,195 +6,11 @@ class C_employee extends CI_Controller {
 		parent::__construct();
 		$this->load->model('m_employee');
 		$this->load->model('mpabx11');
-		// if ( !$this->session->userdata('username') ){
-		// 	redirect(base_url(). 'login');
-		// }			
+		if ( !$this->session->userdata('username') ){
+			redirect(base_url(). 'login');
+		}			
 	}
 
-	public function get_employee_data(){
-		$data = [];
-		$config = [];
-		$config['full_tag_open'] = '<ul class="pagination">';
-	    $config['full_tag_close'] = '</ul>';
-	    $config['num_tag_open'] = '<li>';
-	    $config['num_tag_close'] = '</li>';
-	    $config['cur_tag_open'] = '<li class="active"><span>';
-	    $config['cur_tag_close'] = '<span class="sr-only">(current)</span></span></li>';
-	    $config['prev_tag_open'] = '<li>';
-	    $config['prev_tag_close'] = '</li>';
-	    $config['next_tag_open'] = '<li>';
-	    $config['next_tag_close'] = '</li>';
-	    $config['first_link'] = '&laquo;';
-	    $config['prev_link'] = '&lsaquo;';
-	    $config['last_link'] = '&raquo;';
-	    $config['next_link'] = '&rsaquo;';
-	    $config['first_tag_open'] = '<li>';
-	    $config['first_tag_close'] = '</li>';
-	    $config['last_tag_open'] = '<li>';
-	    $config['last_tag_close'] = '</li>';
-	    $data['total_employee'] =  $this->m_employee->count_employee();
-		
-	    $config["base_url"] = base_url() . "c_employee/get_employee_data";
-	    $config['total_rows'] = $data['total_employee'];
-	    $config['per_page'] = '10';
-	    $config['uri_segment'] = '3';
-	    $this->pagination->initialize($config);
-
-		$data['header'] = $this->load->view('headers/head', '', TRUE);
-		// $data['menu'] = '';
-		// $data['cover'] = $this->load->view('headers/cover', '', TRUE);
-		// $data['navigation'] = $this->memployee->getOfficeLocations();
-		$data['no'] = $this->uri->segment(3);
-		$data['employees'] = $this->m_employee->employee_list($config['per_page'], $this->uri->segment(3));
-		// var_dump($data['employees']);die;
-		$data['footer'] = $this->load->view('footers/footer', '', TRUE);
-		$data['content'] = $this->load->view('contents/view_employee', $data);
-		// $this->load->view('main', $data);
-		// echo json_encode($data);
-		
-	}
-	
-	public function addEmployee(){
-		if ( $this->input->post() ){
-			$formInfo = [];
-			$formInfo['employee_status'] = $this->input->post('selectEmployeeStatus', TRUE);
-			$formInfo['office_location_id'] = $this->input->post('selectOfficeLocation', TRUE);
-			$formInfo['employeeno'] = $this->input->post('txtEmployeeNo', TRUE);
-			$formInfo['employeename'] = strtoupper($this->input->post('txtEmployee', TRUE));
-			$formInfo['iddept'] = $this->input->post('selDepartment', TRUE);
-			$formInfo['idposition'] = $this->input->post('selPosition');
-			if ($this->input->post('selExtension', TRUE)){
-				$formInfo['extId'] = $this->input->post('selExtension', TRUE);
-			} else {
-				$formInfo['ext'] = $this->input->post('textExtension', TRUE);
-			}					
-			if ( $this->memployee->saveEmployee($formInfo) !== 0){
-				$this->mpabx11->updateExtensionStatusAdd($formInfo['extId']);
-				$message = '<div class="alert alert-success">Success!</div>';
-        		$this->session->set_flashdata('message', $message);
-				redirect(base_url() . 'cemployee');				
-			}else{
-				$message = '<div class="alert alert-danger">Something wrong!</div>';
-        		$this->session->set_flashdata('message', $message);
-				redirect(base_url() . 'cemployee/addEmployee');
-			}
-		}
-
-		$data = [];
-		$data['extensions'] = $this->mpabx11->index();
-		$data['departments'] = $this->memployee->department();
-		$data['positions'] = $this->memployee->position();
-		$data['listOfficeLocations'] = $this->memployee->getOfficeLocations();
-		$data['menu'] = '';
-		$data['header'] = $this->load->view('headers/head', '', TRUE);
-		$data['cover'] = $this->load->view('headers/cover', '', TRUE);
-		$data['navigation'] = $this->memployee->getOfficeLocations();		
-		$data['content'] = $this->load->view('forms/formAddEmployee', $data, TRUE);
-		$data['footer'] = $this->load->view('footers/footer', '', TRUE);
-		$this->load->view('main', $data);
-	}
-
-	public function modifyEmployee($employeeId = NULL){
-		if ( isset($_POST['btnUpdateEmployee']) ){
-			$formInfo = [];
-			$formInfo['office_location_id'] = $this->input->post('selectOfficeLocation');
-			$formInfo['employeeno'] = $this->input->post('txtEmployeeNo');
-			$formInfo['employeename'] = strtoupper($this->input->post('txtEmployeeName'));
-			$formInfo['iddept'] = $this->input->post('selDepartment');
-			$formInfo['idposition'] = $this->input->post('selPosition');
-			$formInfo['extId'] = $this->input->post('selExtension');
-			$formInfo['ext'] = $this->input->post('textExtension');
-			$formInfo['txtprevid'] = $this->input->post('txtprevid');
-			if ( !$this->memployee->modifyEmployee($formInfo, $employeeId) ){				
-				redirect(base_url() . 'cemployee/modifyEmployee/' . $employeeId);
-			} else {
-				if ( !$this->memployee->employee_ext_id($formInfo['txtprevid']) > 0){
-					$this->mpabx11->updateExtensionStatus0($formInfo['extId'],$formInfo['txtprevid']);	
-				}else{
-					$this->mpabx11->updateExtensionStatus1($formInfo['extId'],$formInfo['txtprevid']);	
-				}
-				
-				redirect(base_url() . 'cemployee');
-			}
-		}
-
-		$data = [];
-		$data['extensions'] = $this->mpabx11->index();
-		$data['employees'] = $this->memployee->employeeIds($employeeId);
-		$data['employeeStatuses'] = $this->memployee->getEmployeeStatus();
-		$data['getEmployeeByIds'] = $this->memployee->getEmployeeByIds($employeeId);
-		$data['departments'] = $this->memployee->department();
-		$data['positions'] = $this->memployee->position();
-		// $data['getEmpoyeeStatus'] = $this->memployee->getEmployeeStatus();
-		$data['header'] = $this->load->view('headers/head', '', TRUE);		
-		$data['menu'] = '';
-		$data['cover'] = $this->load->view('headers/cover', '', TRUE);
-		$data['navigation'] = $this->memployee->getOfficeLocations();
-		$data['listOfficeLocations'] = $this->memployee->getOfficeLocations();					
-		$data['content'] = $this->load->view('forms/formEditEmployee', $data, TRUE);		
-		$data['footer'] = $this->load->view('footers/footer', '', TRUE);		
-		$this->load->view('main', $data);	
-	}
-
-	public function toggleEmployeeStatus($idEmployee, $status) {
-		if ($this->memployee->toggleEmployeeStatus($idEmployee, $status)){
-			$message = '<div class="alert alert-success">Employee status changed!</div>';
-			$this->session->set_flashdata('message', $message);
-			redirect(base_url() . 'cemployee');
-		}
-	}
-
-	public function search($searchCategory=false, $txtSearch=false){
-		$data = [];
-		if ( !$searchCategory AND !$txtSearch){
-			$searchCategory = $this->input->post('selCategory');
-			$txtSearch = htmlspecialchars($this->input->post('txtSearch'));	
-		}
-		
-		$config = [];
-		$config['full_tag_open'] = '<ul class="pagination">';
-	    $config['full_tag_close'] = '</ul>';
-	    $config['num_tag_open'] = '<li>';
-	    $config['num_tag_close'] = '</li>';
-	    $config['cur_tag_open'] = '<li class="active"><span>';
-	    $config['cur_tag_close'] = '<span class="sr-only">(current)</span></span></li>';
-	    $config['prev_tag_open'] = '<li>';
-	    $config['prev_tag_close'] = '</li>';
-	    $config['next_tag_open'] = '<li>';
-	    $config['next_tag_close'] = '</li>';
-	    $config['first_link'] = '&laquo;';
-	    $config['prev_link'] = '&lsaquo;';
-	    $config['last_link'] = '&raquo;';
-	    $config['next_link'] = '&rsaquo;';
-	    $config['first_tag_open'] = '<li>';
-	    $config['first_tag_close'] = '</li>';
-	    $config['last_tag_open'] = '<li>';
-	    $config['last_tag_close'] = '</li>';
-	    $data['totalEmployee'] =  $this->memployee->countEmployeeSearch($searchCategory, urldecode($txtSearch));
-	   	$config["base_url"] = base_url() . "cemployee/search/" . $searchCategory . "/" .  $txtSearch;
-	    $config['total_rows'] = $data['totalEmployee'];
-	    $config['per_page'] = '10';
-	    $config['uri_segment'] = '5';
-	    $this->pagination->initialize($config);
-
-
-		$data['header'] = $this->load->view('headers/head', '', TRUE);
-		$data['menu'] = '';
-		$data['cover'] = $this->load->view('headers/cover', '', TRUE);
-		$data['navigation'] = $this->memployee->getOfficeLocations();
-		$data['no'] = $this->uri->segment(5);
-		$data['employees'] = $this->memployee->employeeListSearch($config['per_page'], $this->uri->segment(5),  $searchCategory, urldecode($txtSearch));
-		$data['content'] = $this->load->view('contents/vEmployee', $data, TRUE);
-		$data['footer'] = $this->load->view('footers/footer', '', TRUE);
-
-		$this->load->view('main', $data);
-	}
-
-
-	// public function deleteEmployee($idEmployee = ''){
-	// 	$this->memployee->deleteEmployee($idEmployee);
-	// 	redirect(base_url() . 'cemployee');
-	// }
 
 	public function department(){		
 		$data = [];
@@ -217,8 +33,8 @@ class C_employee extends CI_Controller {
 	    $config['first_tag_close'] = '</li>';
 	    $config['last_tag_open'] = '<li>';
 	    $config['last_tag_close'] = '</li>';
-	    $data['totalDepartment'] =  $this->memployee->countDepartment();
-	    $config["base_url"] = base_url() . "cemployee/department";
+	    $data['totalDepartment'] =  $this->m_employee->count_department();
+	    $config["base_url"] = base_url() . "c_employee/department";
 	    $config['total_rows'] = $data['totalDepartment'];
 	    $config['per_page'] = '10';
 	    $config['uri_segment'] = '3';
@@ -226,67 +42,78 @@ class C_employee extends CI_Controller {
 
 		$data['header'] = $this->load->view('headers/head', '', TRUE);
 		$data['menu'] = '';
+		$data['navigation'] = $this->load->view('headers/navigation', '', TRUE);
 		$data['cover'] = $this->load->view('headers/cover', '', TRUE);
-		$data['navigation'] = $this->memployee->getOfficeLocations();
-		$data['departments'] = $this->memployee->departmentList($config['per_page'], $this->uri->segment(3));
-		$data['content'] = $this->load->view('contents/vDepartment', $data, TRUE);
+		$data['departments'] = $this->m_employee->department_list($config['per_page'], $this->uri->segment(3));
+		$data['content'] = $this->load->view('contents/view_department', $data, TRUE);
 		$data['footer'] = $this->load->view('footers/footer', '', TRUE);
 		$this->load->view('main', $data);
 	}
 
-	public function addDepartment(){
+	public function add_department(){
 		if ( $this->input->post() ){
 			$formInfo = [];
 			$formInfo['deptdesc'] = htmlspecialchars(strtoupper($this->input->post('txtDepartment')));
-			$formInfo['group_id'] = htmlspecialchars(strtoupper($this->input->post('selectGroup')));
 			$formInfo['stsactive'] = htmlspecialchars(strtoupper($this->input->post('selectStatus')));
-			if ( $this->memployee->saveDepartment($formInfo) ){
-				redirect(base_url() . 'cemployee/addDepartment');
+			if ( $this->m_employee->save_department($formInfo) ){
+				$message = '<div class="alert alert-success">Department added</div>';
+            	$this->session->set_flashdata('message', $message);
+				redirect(base_url() . 'c_employee/department');
 			} else {
-				redirect(base_url() . 'cemployee/department');
+				$message = '<div class="alert alert-danger">Add department failed</div>';
+            	$this->session->set_flashdata('message', $message);
+				redirect(base_url() . 'c_employee/add_department');
 			}
 		}
 		$data = [];
-		$data['departments'] = $this->memployee->department();
 		$data['header'] = $this->load->view('headers/head', '', TRUE);
 		$data['menu'] = '';
 		$data['cover'] = $this->load->view('headers/cover', '', TRUE);
-		$data['navigation'] = $this->memployee->getOfficeLocations();
-		$data['groups'] = $this->memployee->groupList();
-		$data['content'] = $this->load->view('forms/formAddDepartment', $data, TRUE);
+		$data['navigation'] = $this->load->view('headers/navigation', '', TRUE);
+		$data['content'] = $this->load->view('forms/form_add_department', $data, TRUE);
 		$data['footer'] = $this->load->view('footers/footer', '', TRUE);
 		$this->load->view('main', $data);
 	}
 
-	public function modifyDepartment($iddept = NULL){
-		if ( isset($_POST['btnModifyDepartment']) ){
-			$formInfo = [];
-			$formInfo['deptdesc'] = htmlspecialchars(strtoupper($this->input->post('txtDepartmentName')));
-			$formInfo['group_id'] = htmlspecialchars(strtoupper($this->input->post('selectGroup')));
-			$formInfo['stsactive'] = htmlspecialchars(strtoupper($this->input->post('selectStatus')));
-			if ( !$this->memployee->modifyDepartment($formInfo, $iddept) ){
-				redirect(base_url() . 'cemployee/modifyDepartment/' . $iddept);
-			} else {
-				redirect(base_url() . 'cemployee/department');
-			}
-		}
-
+	public function modify_department($iddept){
 		$data = [];
-		$data['getDepartmentByIds'] = $this->memployee->getDepartmentByIds($iddept);
-		$data['departmentIds'] = $this->memployee->departmentIds($iddept);
+		$data['getDepartmentByIds'] = $this->m_employee->get_department_by_id($iddept);
 		$data['header'] = $this->load->view('headers/head', '', TRUE);		
 		$data['menu'] = '';
 		$data['cover'] = $this->load->view('headers/cover', '', TRUE);
-		$data['navigation'] = $this->memployee->getOfficeLocations();
-		$data['groups'] = $this->memployee->groupList();					
-		$data['content'] = $this->load->view('forms/formEditDepartment', $data, TRUE);		
+		$data['navigation'] = $this->load->view('headers/navigation', '', TRUE);
+		$data['content'] = $this->load->view('forms/form_edit_department', $data, TRUE);		
 		$data['footer'] = $this->load->view('footers/footer', '', TRUE);		
 		$this->load->view('main', $data);	
 	}
 
-	public function deleteDepartment($iddept = ''){
-		$this->memployee->deleteDepartment($iddept);
-		redirect(base_url() . 'cemployee/department');
+	public function update_department() {
+		if ( isset($_POST['btnModifyDepartment']) ){
+			$iddept = $this->input->post('txtDepartmentId');
+			$formInfo['deptdesc'] = htmlspecialchars(strtoupper($this->input->post('txtDepartmentName')));
+			$formInfo['stsactive'] = htmlspecialchars(strtoupper($this->input->post('selectStatus')));
+			if ( !$this->m_employee->update_department($formInfo, $iddept) ){
+				$message = '<div class="alert alert-success">Department updated</div>';
+            	$this->session->set_flashdata('message', $message);
+				redirect(base_url() . 'c_employee/department/');
+			} else {
+				$message = '<div class="alert alert-danger">Update department failed</div>';
+            	$this->session->set_flashdata('message', $message);
+				redirect(base_url() . 'c_employee/department');
+			}
+		}
+	}
+
+	public function delete_department($iddept = ''){
+		if ($this->m_employee->delete_department($iddept)) {
+			$message = '<div class="alert alert-success">Department deleted</div>';
+			$this->session->set_flashdata('message', $message);
+			redirect(base_url() . 'c_employee/department');
+		} else {
+			$message = '<div class="alert alert-danger">Something wrong</div>';
+			$this->session->set_flashdata('message', $message);
+			redirect(base_url() . 'c_employee/department');
+		}
 	}	
 
 	public function position(){		
@@ -310,8 +137,8 @@ class C_employee extends CI_Controller {
 	    $config['first_tag_close'] = '</li>';
 	    $config['last_tag_open'] = '<li>';
 	    $config['last_tag_close'] = '</li>';
-	    $data['totalPosition'] =  $this->memployee->countPosition();
-	    $config["base_url"] = base_url() . "cemployee/position";
+	    $data['totalPosition'] =  $this->m_employee->count_position();
+	    $config["base_url"] = base_url() . "c_employee/position";
 	    $config['total_rows'] = $data['totalPosition'];
 	    $config['per_page'] = '10';
 	    $config['uri_segment'] = '3';
@@ -321,68 +148,80 @@ class C_employee extends CI_Controller {
 		$data['no'] = $this->uri->segment(3);
 		$data['menu'] = '';
 		$data['cover'] = $this->load->view('headers/cover', '', TRUE);
-		$data['navigation'] = $this->memployee->getOfficeLocations();
-		$data['departments'] = $this->memployee->department();
-		$data['get_positions'] = $this->memployee->position();
-		$data['positions'] = $this->memployee->positionList($config['per_page'], $this->uri->segment(3));
-		$data['content'] = $this->load->view('contents/vPosition', $data, TRUE);
+		$data['navigation'] = $this->load->view('headers/navigation',  '', TRUE);
+		$data['departments'] = $this->m_employee->get_department();
+		$data['positions'] = $this->m_employee->position_list($config['per_page'], $this->uri->segment(3));
+		$data['content'] = $this->load->view('contents/view_position', $data, TRUE);
 		$data['footer'] = $this->load->view('footers/footer', '', TRUE);
 		$this->load->view('main', $data);
 	}
 
-	public function addPosition(){
+	public function add_position(){
 		if ( $this->input->post() ){
 			$formInfo = [];
 			$formInfo['txtPosition'] = strtoupper($this->input->post('txtPosition'));
 			$formInfo['selDepartment'] = $this->input->post('selDepartment');
-			$formInfo['selLevel'] = $this->input->post('selLevel');
-			if ( $this->memployee->savePosition($formInfo) ){
-				redirect(base_url() . 'cemployee/addPosition');
+			if ( $this->m_employee->save_position($formInfo) ){
+				$message = '<div class="alert alert-success">Position added</div>';
+				$this->session->set_flashdata('message', $message);
+				redirect(base_url() . 'c_employee/position');
 			} else {
-				redirect(base_url() . 'cemployee/position');
+					$message = '<div class="alert alert-success">Add position failed!</div>';
+				$this->session->set_flashdata('message', $message);
+				redirect(base_url() . 'c_employee/position');
 			}
 		}
 		$data = [];
-		$data['positions'] = $this->memployee->position();
-		$data['departments'] = $this->memployee->department();		
+		$data['departments'] = $this->m_employee->get_department();		
 		$data['header'] = $this->load->view('headers/head', '', TRUE);
 		$data['menu'] = '';
 		$data['cover'] = $this->load->view('headers/cover', '', TRUE);
-		$data['navigation'] = $this->memployee->getOfficeLocations();
-		$data['content'] = $this->load->view('forms/formAddPosition', $data, TRUE);
+		$data['navigation'] = $this->load->view('headers/navigation', '', TRUE);
+		$data['content'] = $this->load->view('forms/form_add_position', $data, TRUE);
 		$data['footer'] = $this->load->view('footers/footer', '', TRUE);
 		$this->load->view('main', $data);
 	}
 
-	public function modifyPosition($idposition = NULL){
-		if ( isset($_POST['btnModifyPosition']) ){
-			$formInfo = [];
-			$formInfo['positiondesc'] = strtoupper($this->input->post('txtPositionName'));
-			$formInfo['iddept'] = $this->input->post('selDepartment');
-			$formInfo['level'] = $this->input->post('selLevel');
-			if ( !$this->memployee->modifyPosition($formInfo, $idposition) ){
-				redirect(base_url() . 'cemployee/modifyPosition/' . $idposition);
-			} else {
-				redirect(base_url() . 'cemployee/position');
-			}
-		}
-
+	public function modify_position($idposition){
 		$data = [];
-		$data['departments'] = $this->memployee->department();
-		$data['getPositionByIds'] = $this->memployee->getPositionByIds($idposition);
-		$data['positionIds'] = $this->memployee->positionIds($idposition);
+		$data['departments'] = $this->m_employee->get_department();
+		$data['getPositionById'] = $this->m_employee->get_position_by_id($idposition);
 		$data['header'] = $this->load->view('headers/head', '', TRUE);		
 		$data['menu'] = '';
 		$data['cover'] = $this->load->view('headers/cover', '', TRUE);
-		$data['navigation'] = $this->memployee->getOfficeLocations();					
-		$data['content'] = $this->load->view('forms/formEditPosition', $data, TRUE);		
+		$data['navigation'] = $this->load->view('headers/navigation', '', TRUE);					
+		$data['content'] = $this->load->view('forms/form_edit_position', $data, TRUE);		
 		$data['footer'] = $this->load->view('footers/footer', '', TRUE);		
 		$this->load->view('main', $data);	
 	}
 
-	public function deletePosition($idposition = ''){
-		$this->memployee->deletePosition($idposition);
-		redirect(base_url() . 'cemployee/position');
+	public function update_position() {
+		if ( isset($_POST['btnModifyPosition']) ){
+			$idposition = $this->input->post('txtPositionID');
+			$formInfo['positiondesc'] = strtoupper($this->input->post('txtPositionName'));
+			$formInfo['iddept'] = $this->input->post('selDepartment');
+			if ( $this->m_employee->update_position($formInfo, $idposition) ){
+				$message = '<div class="alert alert-success">Position updated</div>';
+            	$this->session->set_flashdata('message', $message);
+				redirect(base_url() . 'c_employee/position');
+			} else {
+				$message = '<div class="alert alert-danger">Update position failed!</div>';
+            	$this->session->set_flashdata('message', $message);
+				redirect(base_url() . 'c_employee/position');
+			}
+		}
+	}
+
+	public function delete_position($idposition = ''){
+		if ($this->m_employee->delete_position($idposition)) {
+			$message = '<div class="alert alert-success">Position deleted</div>';
+			$this->session->set_flashdata('message', $message);
+			redirect(base_url() . 'c_employee/position');
+		} else {
+			$message = '<div class="alert alert-danger">Something wrong</div>';
+			$this->session->set_flashdata('message', $message);
+			redirect(base_url() . 'c_employee/position');
+		}
 	}
 
 	public function searchPosition($department = false, $position = false){
@@ -431,21 +270,6 @@ class C_employee extends CI_Controller {
 
 		$this->load->view('main', $data);
 	}
-
-	// public function getPositionDependent(){
-		// $positionId  = $_POST['id'];
-		// $departmentId = $this->input->post('id', true);
-		// if ($positionId) {
-		// 	$data = $positionId;
-			// $data = $this->memployee->getPositionDependent($positionId);
-			// $data = $this->memployee->getPositionDependent($departmentId);
-		// } else {
-		// 	$data = "gagal";
-		// 	// $data = $this->memployee->getAllPosition();
-		// }
-		// $data = $departmentId;
-		// echo json_encode($data);
-	// }
 
 	public function officeLocation(){		
 		$data = [];
