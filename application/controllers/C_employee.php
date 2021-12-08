@@ -5,7 +5,6 @@ class C_employee extends CI_Controller {
 	public function __construct(){
 		parent::__construct();
 		$this->load->model('m_employee');
-		$this->load->model('mpabx11');
 		if ( !$this->session->userdata('username') ){
 			redirect(base_url(). 'login');
 		}			
