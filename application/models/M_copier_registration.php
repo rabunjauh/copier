@@ -204,7 +204,7 @@ class m_copier_registration extends CI_Model {
 		$info['employeename'] = html_escape($input['txt_employee_name']);
 		$info['iddept'] = $input['sel_dept'];
 		$info['idposition'] = $input['sel_position'];
-		$info['email'] = html_escape($input['txt_employee_email']) . '@wascoenergy.com';
+		$info['email'] = html_escape($input['txt_employee_email']);
 		$this->db->insert('copier_id', $info);
 		if ($this->db->affected_rows() == 1) {
 			return TRUE;
