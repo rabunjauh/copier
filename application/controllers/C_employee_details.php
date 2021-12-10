@@ -391,6 +391,38 @@ class C_employee_details extends CI_Controller {
 			redirect(base_url('c_employee_details'));
 		}
 	}
+
+	public function export_register() {
+		
+		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+		header('Content-Disposition: attachment;filename="list_copier.xlsx"');
+		$spreedsheet = new Spreadsheet();
+		$sheet = $spreedsheet->getActiveSheet();
+		$sheet->setCellValue('B1', 'ID');
+		$sheet->setCellValue('C1', 'Others Password');
+		$sheet->setCellValue('D1', 'Sharp Password');
+		$sheet->setCellValue('E1', 'Name');
+		$sheet->setCellValue('F1', 'Department');
+		$sheet->setCellValue('G1', 'Job Title');
+		$sheet->setCellValue('H1', 'Email');
+
+		$datum = $this->m_copier_registration->get_registration_export();
+
+		$row_number = 2;
+		foreach ($datum as $data) {
+			$sheet->setCellValue('B'. $row_number, $data->idemployee);
+			$sheet->setCellValue('C'. $row_number, $data->others_password);
+			$sheet->setCellValue('D'. $row_number, $data->sharp_password);
+			$sheet->setCellValue('E'. $row_number, $data->employeename);
+			$sheet->setCellValue('F'. $row_number, $data->deptdesc);
+			$sheet->setCellValue('G'. $row_number, $data->positiondesc);
+			$sheet->setCellValue('H'. $row_number, $data->email);
+			$row_number++;
+		}
+
+		$writer = new Xlsx($spreedsheet);
+		$writer->save("php://output");
+	}
 }
 
 	

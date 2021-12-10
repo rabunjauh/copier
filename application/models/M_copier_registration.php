@@ -132,6 +132,23 @@ class m_copier_registration extends CI_Model {
         return $this->db->get('copier_id c')->result();
     }
 
+    public function get_registration_export() {
+        $this->db->select('
+                    c.id,
+                    c.idemployee,
+                    c.employeename,
+                    td.deptdesc,
+                    tp.positiondesc,
+                    c.email,
+                    c.sharp_password,
+                    c.others_password
+        ');
+        $this->db->join('tblfile_department td', 'td.iddept = c.iddept', 'left');
+        $this->db->join('tblfile_position tp', 'tp.idposition = c.idposition', 'left');
+        $this->db->order_by('c.others_password', 'ASC');
+        return $this->db->get('copier_id c')->result();
+    }
+
     public function upload_register($data_upload) {
         $this->db->insert_batch('copier_id', $data_upload);
         if ($this->db->affected_rows() > 0) {
