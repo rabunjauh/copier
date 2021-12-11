@@ -12,21 +12,11 @@
                 Form Upload Register
             </button>
 		</div>
-		<div class="col-lg-6">			
+		<div class="col-lg-3 col-lg-offset-3">			
             <?=form_open(base_url() . 'c_employee_details/search'); ?>
             <div class="form-inline">
                 <div class="form-group">
-                    <select name="selSearch" id="selSearch" class="form-control">
-                        <option value="0">Search By</option>
-                        <option value="employeename">Name</option>
-                        <option value="idemployee">Employee ID</option>
-                        <option value="other_password">Other Printer Password</option>
-                        <option value="sharp_password">Sharp Printer Password</option>
-                        <!-- <option value="iddept">Department</option> -->
-                        <option value="positiondesc">Position</option>
-                        <option value="email">Email</option>
-                    </select>						
-                    <input type="text" class="form-control" name="txtSearch" id="txtSearch" placeholder="Search">
+                    <input type="text" class="form-control" name="txtSearch" id="txtSearch" placeholder="Search" autofocus>
                     <select name="selDepartment" id="selDepartment" class="form-control">
                     </select>	
                     <button type="submit" name="btnSearch" class="btn btn-primary"><i class="glyphicon glyphicon-search"></i>Search</button>
@@ -117,7 +107,7 @@
             </div>
 
             <div class="modal-body">
-                <a href="<?php echo base_url('c_employee_details/register_password'); ?>" class="btn btn-warning my-1">Download Template</a>
+                <a href="<?php echo base_url('c_employee_details/download_template'); ?>" class="btn btn-warning my-1">Download Template</a>
                 <hr>
                 <?php
                     $input_file_data = array(

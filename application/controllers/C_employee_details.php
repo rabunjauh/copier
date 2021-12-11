@@ -393,7 +393,6 @@ class C_employee_details extends CI_Controller {
 	}
 
 	public function export_register() {
-		
 		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 		header('Content-Disposition: attachment;filename="list_copier.xlsx"');
 		$spreedsheet = new Spreadsheet();
@@ -420,6 +419,22 @@ class C_employee_details extends CI_Controller {
 			$row_number++;
 		}
 
+		$writer = new Xlsx($spreedsheet);
+		$writer->save("php://output");
+	}
+
+	public function download_template() {
+		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+		header('Content-Disposition: attachment;filename="upload_template.xlsx"');
+		$spreedsheet = new Spreadsheet();
+		$sheet = $spreedsheet->getActiveSheet();
+		$sheet->setCellValue('B1', 'ID');
+		$sheet->setCellValue('C1', 'Others Password');
+		$sheet->setCellValue('D1', 'Sharp Password');
+		$sheet->setCellValue('E1', 'Name');
+		$sheet->setCellValue('F1', 'Department');
+		$sheet->setCellValue('G1', 'Job Title');
+		$sheet->setCellValue('H1', 'Email');
 		$writer = new Xlsx($spreedsheet);
 		$writer->save("php://output");
 	}
