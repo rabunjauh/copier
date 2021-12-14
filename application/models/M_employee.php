@@ -38,15 +38,20 @@ class M_employee extends CI_Model {
 		return $this->db->count_all_results();
 	}
 
-	public function department_list($limit, $offset) {
-		if ($offset) {
-			$this->db->limit($limit, $offset);
-		} else {
-			$this->db->limit($limit);
-		}
+	public function department_list() {
 		$this->db->order_by('iddept', 'ASC');
 		return $this->db->get('tblfile_department')->result();
 	}
+	
+	// public function department_list($limit, $offset) {
+	// 	if ($offset) {
+	// 		$this->db->limit($limit, $offset);
+	// 	} else {
+	// 		$this->db->limit($limit);
+	// 	}
+	// 	$this->db->order_by('iddept', 'ASC');
+	// 	return $this->db->get('tblfile_department')->result();
+	// }
 
 	public function save_department($input) {
 		$info['deptdesc'] = $input['deptdesc'];
@@ -97,18 +102,26 @@ class M_employee extends CI_Model {
 		return $this->db->count_all_results();
 	}
 
-	public function position_list($limit, $offset) {
-		if ($offset) {
-			$this->db->limit($limit, $offset);
-		} else {
-			$this->db->limit($limit);
-		}
+	public function position_list() {
 		$this->db->select('tp.idposition, tp.positiondesc, td.deptdesc');
 		$this->db->join('tblfile_department td', 'td.iddept = tp.iddept');
 		$this->db->order_by('td.iddept', 'ASC');
 		$this->db->order_by('tp.positiondesc', 'ASC');
         return $this->db->get('tblfile_position tp')->result();
 	}
+	
+	// public function position_list($limit, $offset) {
+	// 	if ($offset) {
+	// 		$this->db->limit($limit, $offset);
+	// 	} else {
+	// 		$this->db->limit($limit);
+	// 	}
+	// 	$this->db->select('tp.idposition, tp.positiondesc, td.deptdesc');
+	// 	$this->db->join('tblfile_department td', 'td.iddept = tp.iddept');
+	// 	$this->db->order_by('td.iddept', 'ASC');
+	// 	$this->db->order_by('tp.positiondesc', 'ASC');
+    //     return $this->db->get('tblfile_position tp')->result();
+	// }
 
 	public function save_position($input) {
 		$info['positiondesc'] = html_escape($input['txtPosition']);

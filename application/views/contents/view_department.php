@@ -10,15 +10,19 @@
 			<a href="<?php echo base_url() . 'c_employee/add_department'; ?>" class="btn btn-primary btn-lg">Add Department</a>
 		</div>
 	</div>	
+	<br>
 	<div class="row">
 		<div class="col-lg-12">
-			<table class="table table-bordered">
+			<table class="table table-bordered" id="deptData">
+				<thead>
 				<tr>
 					<th>No</th>
 					<th>Department Name</th>
 					<th>Status</th>
-					<th colspan="2">Action</th>
+					<th>Action</th>
 				</tr>
+				</thead>
+				<tbody>
 				<?php $no = 1; ?>
 				<?php foreach ( $departments as $department ): ?>
 					<tr>
@@ -33,13 +37,20 @@
 								}
 							?>
 						</td>
-						<td><a href="<?php echo base_url('c_employee/modify_department/' . $department->iddept); ?>"><i class="fa fa-edit fa-2x"></i></a></td>
-						<td><a href="<?php echo base_url('c_employee/delete_department/' . $department->iddept); ?>"><i class="fa fa-minus-circle fa-2x"></i></a></td>
+						<td>
+							<a href="<?php echo base_url('c_employee/modify_department/' . $department->iddept); ?>"><i class="fa fa-edit fa-2x"></i></a>
+							<a href="<?php echo base_url('c_employee/delete_department/' . $department->iddept); ?>"><i class="fa fa-minus-circle fa-2x"></i></a>
+						</td>
 					</tr>
 					<?php $no++; ?>
-				<?php endforeach; ?>	
+				<?php endforeach; ?>
+				</tbody>	
 			</table>
-			<?php echo $this->pagination->create_links(); ?>
 		</div>	
 	</div>
 </div>
+<script>
+	$(document).ready(function(){
+        $('#deptData').DataTable();
+    });
+</script>

@@ -13,7 +13,7 @@ class m_copier_registration extends CI_Model {
         return $this->db->count_all_results();
     }
     
-    public function get_registration_data($limit = 0, $offset = 0) {
+    public function get_registration_data() {
         $this->db->select('
                     c.id,
                     c.idemployee,
@@ -27,9 +27,6 @@ class m_copier_registration extends CI_Model {
         $this->db->join('tblfile_department td', 'td.iddept = c.iddept', 'left');
         $this->db->join('tblfile_position tp', 'tp.idposition = c.idposition', 'left');
         
-        if ($limit != 0) {
-            $this->db->limit($limit, $offset);
-        }
         $this->db->order_by('c.others_password', 'DESC');
         return $this->db->get('copier_id c')->result();
     }
