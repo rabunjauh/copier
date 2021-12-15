@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Wasco Engineering Indonesia - Phone</title>
+	<title>Wasco Engineering Indonesia - Copier Machine User</title>
 	<style type="text/css">
 		.box{
 			font-size: 12px;
