@@ -1,6 +1,3 @@
-<script>
-   
-</script>
 <div class="container box">	
 	<div class="row">
 		<div class="col-lg-6">
@@ -112,6 +109,7 @@
         </div>
     </div>
 </div>
+
 <script>
     $(document).ready(function(){
         $('#registrationData').DataTable();
