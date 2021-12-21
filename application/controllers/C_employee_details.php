@@ -127,12 +127,14 @@ class C_employee_details extends CI_Controller {
 		if ($this->input->post()) {
 			$this->load->library('form_validation');
 			$this->form_validation->set_rules('txt_others_password', 'Others Password', 'required|is_unique[copier_id.others_password]');
+			$this->form_validation->set_rules('txt_sharp_password', 'Sharp Password', 'required|is_unique[copier_id.sharp_password]');
 			$this->form_validation->set_rules('txt_idemployee', 'Employee ID', 'required|is_unique[copier_id.idemployee]');
 			$this->form_validation->set_rules('txt_employee_name', 'Employee Name', 'required');
 			$this->form_validation->set_rules('txt_employee_email', 'Email', 'required');
 
 			if ($this->form_validation->run()) {
 				$form_info['txt_others_password'] = $this->input->post('txt_others_password', TRUE);
+				$form_info['txt_sharp_password'] = $this->input->post('txt_sharp_password', TRUE);
 				$form_info['txt_idemployee'] = $this->input->post('txt_idemployee', TRUE);
 				$form_info['txt_employee_name'] = $this->input->post('txt_employee_name', TRUE);
 				$form_info['sel_dept'] = $this->input->post('sel_dept', TRUE);
@@ -185,6 +187,7 @@ class C_employee_details extends CI_Controller {
 		if ($this->form_validation->run()) {
 			$id = $this->input->post('copier_id', TRUE);
 			$form_info['txt_other_password'] = $this->input->post('txt_other_password', TRUE);
+			$form_info['txt_sharp_password'] = $this->input->post('txt_sharp_password', TRUE);
 			$form_info['txt_employeeid'] = $this->input->post('txt_employeeid', TRUE);
 			$form_info['txt_employeename'] = $this->input->post('txt_employeename', TRUE);
 			$form_info['sel_dept'] = $this->input->post('sel_dept', TRUE);
@@ -440,6 +443,30 @@ class C_employee_details extends CI_Controller {
 		$sheet->setCellValue('H1', 'Email');
 		$writer = new Xlsx($spreedsheet);
 		$writer->save("php://output");
+	}
+
+	public function pdf_register($id) {
+		$employee = $this->m_copier_registration->get_registration_by_id($id);
+		$data['recipient'] = $employee->email . '@wascoenergy.com';
+		$data['idemployee'] = $employee->idemployee;
+		$data['employeename'] = $employee->employeename;
+		$data['deptdesc'] = $employee->deptdesc;
+		$data['positiondesc'] = $employee->positiondesc;
+		$data['others_password'] = $employee->others_password;
+		$data['sharp_password'] = $employee->sharp_password;
+
+		$html = $this->load->view('contents/print_register', $data, TRUE);
+
+		$mpdf = new \Mpdf\Mpdf();
+		$mpdf->WriteHTML($html);
+		$mpdf->Output();
+	}
+
+	public function get_last_others_password() {
+		$last_others_password = $this->m_copier_registration->get_last_others_password();
+
+		// var_dump($last_others_password->others_password);
+		echo $last_others_password->others_password;
 	}
 }
 

@@ -6,19 +6,20 @@
     </div>
 
     <?php 
-        // $sharp_password_data = array(
-        //     'type' => 'text',
-        //     'name' => 'txt_sharp_password',
-        //     'id' => 'txt_sharp_password',
-        //     'class' => 'form-control'
-        // );
-        
         $other_password_data = array(
             'type' => 'text',
             'name' => 'txt_others_password',
             'id' => 'txt_others_password',
             'class' => 'form-control',
             'placeholder' => 'Others Password'
+        );
+
+        $sharp_password_data = array(
+            'type' => 'text',
+            'name' => 'txt_sharp_password',
+            'id' => 'txt_sharp_password',
+            'class' => 'form-control',
+            'placeholder' => 'Sharp Password'
         );
         
         $idemployee_data = array(
@@ -115,6 +116,13 @@
                 
                 <div class="form-group">
             <?php
+                echo form_label('Sharp Password: ', $sharp_password_data['name']);
+                echo form_input($sharp_password_data);
+            ?>
+                </div>    
+                
+                <div class="form-group">
+            <?php
                 echo form_label('Employee ID: ', $idemployee_data['name']);
                 echo form_input($idemployee_data);
             ?>
@@ -187,6 +195,20 @@
         dependentSelect("iddept="+sel_dept_value, url, sel_position);
     });
 
+    txt_others_password = document.getElementById('txt_others_password');
+    txt_sharp_password = document.getElementById('txt_sharp_password');
+    window.addEventListener('load', function() {
+        getData('get_last_others_password', txt_others_password); 
+    });
+
+    txt_others_password.addEventListener('keyup', function() {
+        if (this.value === '') {
+            txt_sharp_password.value = '';    
+        } else {
+            txt_sharp_password.value = '1' + this.value;
+        }
+    });
+
     function dependentSelect(input, url, elementTarget) {
         let xhttp = new XMLHttpRequest();
         xhttp.open('POST', url, true);
@@ -198,6 +220,21 @@
         }
         xhttp.setRequestHeader('Content-Type',  'application/x-www-form-urlencoded');
         xhttp.send(input);
+    }
+
+    function getData(url, elementTarget) {
+        let xhttp = new XMLHttpRequest();
+        xhttp.open('GET', url, true);
+        xhttp.onreadystatechange = function() {
+            if(this.readyState == 4 && this.status == 200) {
+                intPassword = (parseInt(this.responseText) + 1);
+                strValue = '0' + intPassword.toString();
+                elementTarget.value = strValue;
+                txt_sharp_password.value = '1' + strValue;
+            } 
+        }
+        xhttp.setRequestHeader('Content-Type',  'application/x-www-form-urlencoded');
+        xhttp.send();
     }
 </script>
 

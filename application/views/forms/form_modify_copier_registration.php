@@ -14,6 +14,15 @@
             'value'  => $copier_registration->others_password,
             'placeholder' => 'Other Password'
         );
+       
+        $txt_sharp_password_data = array(
+            'type' => 'text',
+            'name' => 'txt_sharp_password',
+            'id' => 'txt_sharp_password',
+            'class' => 'form-control',
+            'value'  => $copier_registration->sharp_password,
+            'placeholder' => 'Other Password'
+        );
 
         $idemployee_data = array(
             'type' => 'text',
@@ -95,6 +104,13 @@
                     echo form_input($txt_other_password_data); 
             ?>
                 </div>
+
+                <div class="form-group">
+            <?php
+                echo form_label('Sharp Password: ', $txt_sharp_password_data['name']);
+                echo form_input($txt_sharp_password_data);
+            ?>
+                </div> 
                 
                 <div class="form-group">
             <?php 
@@ -166,6 +182,17 @@
         const sel_dept_value = this.value;
         const url = '<?= base_url('c_employee/department_position_dependent'); ?>';
         dependentSelect("iddept="+sel_dept_value, url, sel_position);
+    });
+
+    txt_others_password = document.getElementById('txt_other_password');
+    txt_sharp_password = document.getElementById('txt_sharp_password');
+
+    txt_others_password.addEventListener('keyup', function() {
+        if (this.value === '') {
+            txt_sharp_password.value = '';    
+        } else {
+            txt_sharp_password.value = '1' + this.value;
+        }
     });
 
     function dependentSelect(input, url, elementTarget) {

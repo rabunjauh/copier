@@ -214,7 +214,7 @@ class m_copier_registration extends CI_Model {
     public function save_register($input) {
 		$info['idemployee'] = html_escape($input['txt_idemployee']);
 		$info['others_password'] = html_escape($input['txt_others_password']);
-		$info['sharp_password'] = '1' . $info['others_password'];
+		$info['sharp_password'] = html_escape($input['txt_sharp_password']);
 		$info['employeename'] = html_escape($input['txt_employee_name']);
 		$info['iddept'] = $input['sel_dept'];
 		$info['idposition'] = $input['sel_position'];
@@ -230,7 +230,7 @@ class m_copier_registration extends CI_Model {
     public function update_register($input, $id) {
         $info['idemployee'] = html_escape($input['txt_employeeid']);
 		$info['others_password'] = html_escape($input['txt_other_password']);
-		$info['sharp_password'] = '1' . $info['others_password'];
+		$info['sharp_password'] = html_escape($info['others_password']);
 		$info['employeename'] = html_escape($input['txt_employeename']);
 		$info['iddept'] = $input['sel_dept'];
 		$info['idposition'] = $input['sel_position'];
@@ -242,5 +242,12 @@ class m_copier_registration extends CI_Model {
 		} else {
 			return FALSE;
 		}
+    }
+
+    public function get_last_others_password() {
+        $this->db->limit(1);
+        $this->db->order_by('id', 'DESC');
+        $this->db->select('others_password');
+        return $this->db->get('copier_id')->row();
     }
 }
