@@ -238,7 +238,7 @@ class m_copier_registration extends CI_Model {
         $this->db->where('id', $id);
 		$this->db->update('copier_id', $info);
 		if ($this->db->affected_rows() == 1) {
-			return TRUE;
+            	return TRUE;
 		} else {
 			return FALSE;
 		}

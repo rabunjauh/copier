@@ -126,11 +126,11 @@ class C_employee_details extends CI_Controller {
     public function register_password() {
 		if ($this->input->post()) {
 			$this->load->library('form_validation');
-			$this->form_validation->set_rules('txt_others_password', 'Others Password', 'required|is_unique[copier_id.others_password]');
-			$this->form_validation->set_rules('txt_sharp_password', 'Sharp Password', 'required|is_unique[copier_id.sharp_password]');
-			$this->form_validation->set_rules('txt_idemployee', 'Employee ID', 'required|is_unique[copier_id.idemployee]');
-			$this->form_validation->set_rules('txt_employee_name', 'Employee Name', 'required');
-			$this->form_validation->set_rules('txt_employee_email', 'Email', 'required');
+			$this->form_validation->set_rules('txt_others_password', 'Others Password', 'is_unique[copier_id.others_password]');
+			$this->form_validation->set_rules('txt_sharp_password', 'Sharp Password', 'is_unique[copier_id.sharp_password]');
+			$this->form_validation->set_rules('txt_idemployee', 'Employee ID', 'is_unique[copier_id.idemployee]');
+			$this->form_validation->set_rules('txt_employee_name', 'Employee Name');
+			$this->form_validation->set_rules('txt_employee_email', 'Email');
 
 			if ($this->form_validation->run()) {
 				$form_info['txt_others_password'] = $this->input->post('txt_others_password', TRUE);
@@ -178,13 +178,13 @@ class C_employee_details extends CI_Controller {
     }
 
 	public function update_copier_registration() {
-		$this->load->library('form_validation');
-		$this->form_validation->set_rules('txt_other_password', 'Others Password', 'required');
-		$this->form_validation->set_rules('txt_employeeid', 'Employee ID', 'required');
-		$this->form_validation->set_rules('txt_employeename', 'Employee Name', 'required');
-		$this->form_validation->set_rules('txt_email', 'Email', 'required');
+		// $this->load->library('form_validation');
+		// $this->form_validation->set_rules('txt_other_password', 'Others Password');
+		// $this->form_validation->set_rules('txt_employeeid', 'Employee ID');
+		// $this->form_validation->set_rules('txt_employeename', 'Employee Name');
+		// $this->form_validation->set_rules('txt_email', 'Email');
 
-		if ($this->form_validation->run()) {
+		// if ($this->form_validation->run()) {
 			$id = $this->input->post('copier_id', TRUE);
 			$form_info['txt_other_password'] = $this->input->post('txt_other_password', TRUE);
 			$form_info['txt_sharp_password'] = $this->input->post('txt_sharp_password', TRUE);
@@ -200,9 +200,9 @@ class C_employee_details extends CI_Controller {
 			} else {
 				$message = '<div class="alert alert-danger">Failed</div>';
 				$this->session->set_flashdata('message', $message);
-				redirect(base_url('c_employee_details/modify_copier_registration/' . $id));
+				redirect(base_url('c_employee_details'));
 			}
-		}
+		// }
 	}
 	
 	public function load_registration_data($page = 0) {
