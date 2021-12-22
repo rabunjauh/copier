@@ -468,6 +468,17 @@ class C_employee_details extends CI_Controller {
 		// var_dump($last_others_password->others_password);
 		echo $last_others_password->others_password;
 	}
+
+	public function client_subcon() {
+		$data['copier_registrations'] = $this->m_copier_registration->get_client_subcon();
+		$data['header'] = $this->load->view('headers/head', '', TRUE);
+		$data['menu'] = '';
+		$data['navigation'] = $this->load->view('headers/navigation', '', TRUE);
+		$data['cover'] = $this->load->view('headers/cover', '', TRUE);
+		$data['content'] = $this->load->view('contents/vCopierRegistrationClient', $data, TRUE);
+		$data['footer'] = $this->load->view('footers/footer', '', TRUE);
+		$this->load->view('main', $data);
+	}
 }
 
 	

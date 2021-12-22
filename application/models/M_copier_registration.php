@@ -27,6 +27,8 @@ class m_copier_registration extends CI_Model {
         $this->db->join('tblfile_department td', 'td.iddept = c.iddept', 'left');
         $this->db->join('tblfile_position tp', 'tp.idposition = c.idposition', 'left');
         
+        $client_subcon = array('CLIENT', 'SUBCON');
+        $this->db->where_not_in('td.deptdesc', $client_subcon);
         $this->db->order_by('c.others_password', 'DESC');
         return $this->db->get('copier_id c')->result();
     }
@@ -249,5 +251,24 @@ class m_copier_registration extends CI_Model {
         $this->db->order_by('id', 'DESC');
         $this->db->select('others_password');
         return $this->db->get('copier_id')->row();
+    }
+
+    public function get_client_subcon() {
+        $this->db->select('
+                    c.id,
+                    c.idemployee,
+                    c.employeename,
+                    td.deptdesc,
+                    tp.positiondesc,
+                    c.email,
+                    c.sharp_password,
+                    c.others_password
+        ');
+        $this->db->join('tblfile_department td', 'td.iddept = c.iddept', 'left');
+        $this->db->join('tblfile_position tp', 'tp.idposition = c.idposition', 'left');
+        $client_subcon = array('CLIENT', 'SUBCON');
+        $this->db->where_in('td.deptdesc', $client_subcon);
+        $this->db->order_by('c.others_password', 'DESC');
+        return $this->db->get('copier_id c')->result();
     }
 }
