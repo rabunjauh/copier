@@ -45,9 +45,9 @@
                                     <td><?php echo $copier_registration->positiondesc; ?></td>
                                     <td><?php echo $copier_registration->email; ?></td>
                                     <td>
-                                        <button class="btn btn-default"><a href="<?= base_url('c_employee_details/send_email_employee_details/' . $copier_registration->id); ?>" onclick="javascript:return confirm('Click ok to continue')"><i class="fa fa-user fa-2x"></i></a></button>
-                                        <button class="btn btn-default"><a href="<?= base_url('c_employee_details/send_email_sharp_details/' . $copier_registration->id); ?>" onclick="javascript:return confirm('Click ok to continue')"><i class="fa fa-print fa-2x"></i></a></button>
-                                        <button class="btn btn-default"><a href="<?= base_url('c_employee_details/modify_copier_registration/' . $copier_registration->id); ?>"><i class="fa fa-edit fa-2x"></i></a></button>
+                                        <button class="btn btn-default"><a href="<?= base_url('c_employee_details/send_email_employee_details/' . $copier_registration->id); ?>" onclick="javascript:return confirm('Click ok to continue')"><i class="fa fa-user"></i></a></button>
+                                        <button class="btn btn-default"><a href="<?= base_url('c_employee_details/send_email_sharp_details/' . $copier_registration->id); ?>" onclick="javascript:return confirm('Click ok to continue')"><i class="fa fa-print"></i></a></button>
+                                        <button class="btn btn-default"><a href="<?= base_url('c_employee_details/modify_copier_registration/' . $copier_registration->id); ?>"><i class="fa fa-edit"></i></a></button>
                                     </td>
                                 </tr>
                                 </form>
