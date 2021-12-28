@@ -262,7 +262,7 @@ class C_employee_details extends CI_Controller {
 
 		$this->email->from($sender, 'WEI MIS');
         $this->email->to($employee->email . '@wascoenergy.com');
-		$this->email->cc('mustafa.m@wascoenergy.com, ichwan.maulana@wascoenergy.com, wahyu.maulana@wascoenergy.com');
+		// $this->email->cc('mustafa.m@wascoenergy.com, ichwan.maulana@wascoenergy.com, wahyu.maulana@wascoenergy.com');
 		$this->email->subject('Employee Details');
 		$this->email->attach('C:\xampp\htdocs\copier\assets\attachment\Guide-to-Create-Timesheet.pdf');
 		$this->email->message($this->load->view('contents/message_body', $data, TRUE));
@@ -308,7 +308,7 @@ class C_employee_details extends CI_Controller {
 
 		$this->email->from($sender, 'WEI MIS');
 		$this->email->to($employee->email . '@wascoenergy.com');
-		$this->email->cc('mustafa.m@wascoenergy.com, ichwan.maulana@wascoenergy.com, wahyu.maulana@wascoenergy.com');
+		// $this->email->cc('mustafa.m@wascoenergy.com, ichwan.maulana@wascoenergy.com, wahyu.maulana@wascoenergy.com');
 		$this->email->subject('Sharp Printer Details');
         $this->email->attach('C:\xampp\htdocs\copier\assets\attachment\Guide-Input-Password-Printer-Sharp.pdf');
         $this->email->attach('C:\xampp\htdocs\copier\assets\attachment\Guide-Scan-Doc-Machine-Printer-Sharp.pdf');
