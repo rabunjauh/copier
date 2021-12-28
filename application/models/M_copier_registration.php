@@ -232,7 +232,7 @@ class m_copier_registration extends CI_Model {
     public function update_register($input, $id) {
         $info['idemployee'] = html_escape($input['txt_employeeid']);
 		$info['others_password'] = html_escape($input['txt_other_password']);
-		$info['sharp_password'] = html_escape($info['others_password']);
+		$info['sharp_password'] = html_escape($input['txt_sharp_password']);
 		$info['employeename'] = html_escape($input['txt_employeename']);
 		$info['iddept'] = $input['sel_dept'];
 		$info['idposition'] = $input['sel_position'];
