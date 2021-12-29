@@ -45,8 +45,8 @@
                                     <td><?php echo $copier_registration->positiondesc; ?></td>
                                     <td><?php echo $copier_registration->email; ?></td>
                                     <td>
-                                        <a href="<?= base_url('c_employee_details/send_email_employee_details/' . $copier_registration->id); ?>" onclick="javascript:return confirm('Click ok to continue')"><i class="fa fa-user fa-2x"></i></a>
-                                        <a href="<?= base_url('c_employee_details/send_email_sharp_details/' . $copier_registration->id); ?>" onclick="javascript:return confirm('Click ok to continue')"><i class="fa fa-print fa-2x"></i></a>
+                                        <a id="employeeSending" href="<?= base_url('c_employee_details/send_email_employee_details/' . $copier_registration->id); ?>"><i class="fa fa-user fa-2x"></i></a>
+                                        <a id="sharpSending" href="<?= base_url('c_employee_details/send_email_sharp_details/' . $copier_registration->id); ?>"><i class="fa fa-print fa-2x"></i></a>
                                         <a href="<?= base_url('c_employee_details/modify_copier_registration/' . $copier_registration->id); ?>"><i class="fa fa-edit fa-2x"></i></a>
                                     </td>
                                 </tr>
@@ -111,6 +111,22 @@
 </div>
 
 <script>
+    const employeeSending = document.getElementById('employeeSending');
+    const sharpSending = document.getElementById('sharpSending');
+
+    confirmation(employeeSending);
+    confirmation(sharpSending);
+
+    function confirmation(elementTarget) {
+        elementTarget.addEventListener('click', function(event) {
+            if (confirm('Click ok to continue')) {
+                return true;
+            } else {
+                event.preventDefault();
+            }
+        });
+    }
+    
     $(document).ready(function(){
         $('#registrationData').DataTable();
     });
