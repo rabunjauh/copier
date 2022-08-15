@@ -56,12 +56,12 @@
         //     'value'  => $copier_registration->positiondesc
         // );
 
-        $dept_options[''] = 'Department';
+        $dept_options[0] = 'Department';
         foreach($departments as $department) {
             $dept_options[$department->iddept] = $department->deptdesc;
         }
 
-        $position_options[''] = 'Position';
+        $position_options[0] = 'Position';
         foreach($positions as $position) {
             $position_options[$position->idposition] = $position->positiondesc;
         }

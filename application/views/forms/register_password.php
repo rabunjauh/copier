@@ -70,12 +70,12 @@
         //     'placeholder' => 'Job Title'
         // );
 
-        $dept_options[''] = 'Department';
+        $dept_options[0] = 'Department';
         foreach($departments as $department) {
             $dept_options[$department->iddept] = $department->deptdesc;
         }
 
-        $position_options[''] = 'Position';
+        $position_options[0] = 'Position';
         foreach($positions as $position) {
             $position_options[$position->idposition] = $position->positiondesc;
         }
@@ -140,7 +140,7 @@
                 <div class="form-group">
             <?php
                 echo form_label('Department: ', 'sel_dept');
-                echo form_dropdown('sel_dept', $dept_options, 'id="sel_dept" class="form-control"');
+                echo form_dropdown('sel_dept', $dept_options, 'Department', 'id="sel_dept" class="form-control"');
                 // echo form_input($employee_iddept_data);
                 // echo form_input($employee_department_desc_data);
             ?>

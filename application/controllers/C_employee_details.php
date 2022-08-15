@@ -51,7 +51,7 @@ class C_employee_details extends CI_Controller {
         // }else{
         //     $page = 0;
         // }
-		$data['copier_registrations'] = $this->m_copier_registration->get_registration_data();
+		// $data['copier_registrations'] = $this->m_copier_registration->get_registration_data();
 		// $data['copier_registrations'] = $this->m_copier_registration->get_registration_data($config['per_page'], $page);
 		$data['header'] = $this->load->view('headers/head', '', TRUE);
 		$data['menu'] = '';
@@ -60,6 +60,43 @@ class C_employee_details extends CI_Controller {
 		$data['content'] = $this->load->view('contents/vCopierRegistration', $data, TRUE);
 		$data['footer'] = $this->load->view('footers/footer', '', TRUE);
 		$this->load->view('main', $data);
+	}
+
+	public function get_registration_data() {
+		// var_dump($this->input->post());
+		$copier_registrations = $this->m_copier_registration->get_registration_data();
+		$no = $_POST['start'];
+		foreach ($copier_registrations as $copier_registration) {
+			$row =  array();
+			$row[] = ++$no;
+			$row[] = $copier_registration->idemployee;
+			$row[] = $copier_registration->sharp_password;
+			$row[] = $copier_registration->others_password;
+			$row[] = $copier_registration->employeename;
+			$row[] = $copier_registration->deptdesc;
+			$row[] = $copier_registration->positiondesc;
+			$row[] = $copier_registration->email;
+			$row[] = $copier_registration->id;
+			// $row[] = '<a id = "sendEmployeeDetails" href="' . base_url('c_employee_details/send_email_employee_details/') . $copier_registration->id . '"><i class="fa fa-user fa-2x"></i></a> <a class = "sendPrinterDetails" href="' . base_url('c_employee_details/send_email_sharp_details/') . $copier_registration->id . '"><i class="fa fa-print fa-2x"></i></a> <a href="' . base_url('c_employee_details/modify_copier_registration/') . $copier_registration->id . '"<i class="fa fa-edit fa-2x"></i></a>';
+			$data[] = $row;
+		}
+
+		if (isset($data)) {
+			$output = array(
+				"draw" => $_POST['draw'],
+				"recordsTotal" => $this->m_copier_registration->count_all_registration_data(),
+				"recordsFiltered" => $this->m_copier_registration->count_filtered_registration_data(),
+				"data" => $data
+			);
+		} else {
+			$output = array(
+				"draw" => $_POST['draw'],
+				"recordsTotal" => $this->m_copier_registration->count_all_registration_data(),
+				"recordsFiltered" => $this->m_copier_registration->count_filtered_registration_data(),
+				"data" => array()
+			);
+		}
+		$this->output->set_content_type('application/json')->set_output(json_encode($output));
 	}
 
 	public function search($selSearch = false, $txtSearch = false){
@@ -126,11 +163,10 @@ class C_employee_details extends CI_Controller {
     public function register_password() {
 		if ($this->input->post()) {
 			$this->load->library('form_validation');
-			$this->form_validation->set_rules('txt_others_password', 'Others Password', 'required|is_unique[copier_id.others_password]');
-			$this->form_validation->set_rules('txt_sharp_password', 'Sharp Password', 'required|is_unique[copier_id.sharp_password]');
+			$this->form_validation->set_rules('txt_others_password', 'Others Password', 'is_unique[copier_id.others_password]');
+			$this->form_validation->set_rules('txt_sharp_password', 'Sharp Password', 'is_unique[copier_id.sharp_password]');
 			$this->form_validation->set_rules('txt_idemployee', 'Employee ID', 'is_unique[copier_id.idemployee]');
 			$this->form_validation->set_rules('txt_employee_name', 'Employee Name');
-			$this->form_validation->set_rules('sel_dept', 'Department', 'required');
 			$this->form_validation->set_rules('txt_employee_email', 'Email');
 
 			if ($this->form_validation->run()) {
@@ -179,14 +215,14 @@ class C_employee_details extends CI_Controller {
     }
 
 	public function update_copier_registration() {
-		$this->load->library('form_validation');
-		$this->form_validation->set_rules('txt_other_password', 'Others Password', 'required');
-		$this->form_validation->set_rules('txt_sharp_password', 'Sharp Password', 'required');
-		$this->form_validation->set_rules('txt_employeeid', 'Employee ID');
-		$this->form_validation->set_rules('txt_employeename', 'Employee Name');
-		$this->form_validation->set_rules('txt_email', 'Email');
+		// $this->load->library('form_validation');
+		// $this->form_validation->set_rules('txt_other_password', 'Others Password');
+		// $this->form_validation->set_rules('txt_sharp_password', 'Sharp Password');
+		// $this->form_validation->set_rules('txt_employeeid', 'Employee ID');
+		// $this->form_validation->set_rules('txt_employeename', 'Employee Name');
+		// $this->form_validation->set_rules('txt_email', 'Email');
 
-		if ($this->form_validation->run()) {
+		// if ($this->form_validation->run()) {
 			$id = $this->input->post('copier_id', TRUE);
 			$form_info['txt_other_password'] = $this->input->post('txt_other_password', TRUE);
 			$form_info['txt_sharp_password'] = $this->input->post('txt_sharp_password', TRUE);
@@ -204,7 +240,7 @@ class C_employee_details extends CI_Controller {
 				$this->session->set_flashdata('message', $message);
 				redirect(base_url('c_employee_details'));
 			}
-		}
+		// }
 	}
 	
 	public function load_registration_data($page = 0) {
@@ -238,6 +274,7 @@ class C_employee_details extends CI_Controller {
         $sender = 'no-reply@wascoenergy.com';
         $pass = 'password.88';
 		$data = [];
+		$data['username'] = $employee->email;
 		$data['recipient'] = $employee->email . '@wascoenergy.com';
 		$data['sender'] = 'no-reply@wascoenergy.com';
 		$data['idemployee'] = $employee->idemployee;
@@ -258,13 +295,14 @@ class C_employee_details extends CI_Controller {
 		$config['newline'] = "\r\n";
 		$config['mailtype'] = 'html';
 
-		$this->email->initialize($config);	
-
+		$this->email->initialize($config);			
 		$this->email->from($sender, 'WEI MIS');
-        $this->email->to($employee->email . '@wascoenergy.com');
-		$this->email->cc('mustafa.m@wascoenergy.com, ichwan.maulana@wascoenergy.com, wahyu.maulana@wascoenergy.com');
+		$this->email->to($employee->email . '@wascoenergy.com');
+		$this->email->cc('wahyu.maulana@wascoenergy.com, mustafa.m@wascoenergy.com, ichwan.maulana@wascoenergy.com');
 		$this->email->subject('Employee Details');
-		$this->email->attach('C:\xampp\htdocs\copier\assets\attachment\Guide-to-Create-Timesheet.pdf');
+		$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-to-Create-Timesheet.pdf");
+		$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-Input-Password-Printer-Sharp.pdf");
+		$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-Scan-Doc-Machine-Printer-Sharp.pdf");
 		$this->email->message($this->load->view('contents/message_body', $data, TRUE));
 		
 		if ($this->email->send()) {
@@ -308,10 +346,11 @@ class C_employee_details extends CI_Controller {
 
 		$this->email->from($sender, 'WEI MIS');
 		$this->email->to($employee->email . '@wascoenergy.com');
-		$this->email->cc('mustafa.m@wascoenergy.com, ichwan.maulana@wascoenergy.com, wahyu.maulana@wascoenergy.com');
+		$this->email->cc('wahyu.maulana@wascoenergy.com, mustafa.m@wascoenergy.com, ichwan.maulana@wascoenergy.com');
 		$this->email->subject('Sharp Printer Details');
-        $this->email->attach('C:\xampp\htdocs\copier\assets\attachment\Guide-Input-Password-Printer-Sharp.pdf');
-        $this->email->attach('C:\xampp\htdocs\copier\assets\attachment\Guide-Scan-Doc-Machine-Printer-Sharp.pdf');
+      		$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-to-Create-Timesheet.pdf");
+		$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-Input-Password-Printer-Sharp.pdf");
+		//$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-Scan-Doc-Machine-Printer-Sharp.pdf");
 		$this->email->message($this->load->view('contents/message_body_printer', $data, TRUE));
 		if ($this->email->send()) {
 			$message = '<div class="alert alert-success">Email sent to ' . $data['recipient'] . ' successfully</div>';
@@ -430,6 +469,37 @@ class C_employee_details extends CI_Controller {
 		$writer = new Xlsx($spreedsheet);
 		$writer->save("php://output");
 	}
+	
+	public function export_department() {
+		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+		header('Content-Disposition: attachment;filename="list_copier.xlsx"');
+		$spreedsheet = new Spreadsheet();
+		$sheet = $spreedsheet->getActiveSheet();
+		$sheet->setCellValue('B1', 'ID');
+		$sheet->setCellValue('C1', 'Others Password');
+		$sheet->setCellValue('D1', 'Sharp Password');
+		$sheet->setCellValue('E1', 'Name');
+		$sheet->setCellValue('F1', 'Department');
+		$sheet->setCellValue('G1', 'Job Title');
+		$sheet->setCellValue('H1', 'Email');
+
+		$datum = $this->m_copier_registration->get_registration_export();
+
+		$row_number = 2;
+		foreach ($datum as $data) {
+			$sheet->setCellValue('B'. $row_number, $data->idemployee);
+			$sheet->setCellValue('C'. $row_number, $data->others_password);
+			$sheet->setCellValue('D'. $row_number, $data->sharp_password);
+			$sheet->setCellValue('E'. $row_number, $data->employeename);
+			$sheet->setCellValue('F'. $row_number, $data->deptdesc);
+			$sheet->setCellValue('G'. $row_number, $data->positiondesc);
+			$sheet->setCellValue('H'. $row_number, $data->email);
+			$row_number++;
+		}
+
+		$writer = new Xlsx($spreedsheet);
+		$writer->save("php://output");
+	}
 
 	public function download_template() {
 		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -447,6 +517,9 @@ class C_employee_details extends CI_Controller {
 		$writer->save("php://output");
 	}
 
+	
+	
+	
 	public function pdf_register($id) {
 		$employee = $this->m_copier_registration->get_registration_by_id($id);
 		$data['recipient'] = $employee->email . '@wascoenergy.com';
@@ -480,6 +553,10 @@ class C_employee_details extends CI_Controller {
 		$data['content'] = $this->load->view('contents/vCopierRegistrationClient', $data, TRUE);
 		$data['footer'] = $this->load->view('footers/footer', '', TRUE);
 		$this->load->view('main', $data);
+	}
+
+	public function tes ($tesParameter) {
+		echo $tesParameter;
 	}
 }
 

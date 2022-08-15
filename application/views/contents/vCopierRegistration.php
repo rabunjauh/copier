@@ -19,11 +19,11 @@
             <table class="table table-bordered" id="registrationData">
                 <thead>
                     <tr>
-                        <th>No</th>
+                         <th>No</th>
                         <th>Employee ID</th>
                         <th>Sharp Password</th>
-                        <th>Other Password</th>
-                        <th>Name</th>
+                        <th>Others Password</th>
+                        <th>Employee Name</th>
                         <th>Department</th>
                         <th>Job Title</th>
                         <th>Email</th>
@@ -31,31 +31,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <?php
-                            $no = 1;
-                            foreach ($copier_registrations as $copier_registration): 
-                    ?>
-                                <tr>
-                                    <td><?php echo $no; ?></td>
-                                    <td><?php echo $copier_registration->idemployee; ?></td>
-                                    <td><?php echo $copier_registration->sharp_password; ?></td>
-                                    <td><?php echo $copier_registration->others_password; ?></td>
-                                    <td><?php echo $copier_registration->employeename; ?></td>
-                                    <td><?php echo $copier_registration->deptdesc; ?></td>
-                                    <td><?php echo $copier_registration->positiondesc; ?></td>
-                                    <td><?php echo $copier_registration->email; ?></td>
-                                    <td>
-                                        <a id="employeeSending" href="<?= base_url('c_employee_details/send_email_employee_details/' . $copier_registration->id); ?>" onclick="javascript:return confirm('Click ok to continue')"><i class="fa fa-user fa-2x"></i></a>
-                                        <a id="sharpSending" href="<?= base_url('c_employee_details/send_email_sharp_details/' . $copier_registration->id); ?>" onclick="javascript:return confirm('Click ok to continue')"><i class="fa fa-print fa-2x"></i></a>
-                                        <a href="<?= base_url('c_employee_details/modify_copier_registration/' . $copier_registration->id); ?>"><i class="fa fa-edit fa-2x"></i></a>
-                                    </td>
-                                </tr>
-                                </form>
-                    <?php   
-                                
-                            $no++;   
-                            endforeach;
-                    ?>
+                    
                 </tbody>
             </table>
             <!-- <?php echo $this->pagination->create_links(); ?> -->
@@ -111,23 +87,107 @@
 </div>
 
 <script>
-    // const employeeSending = document.getElementById('employeeSending');
-    // const sharpSending = document.getElementById('sharpSending');
+    
 
     // confirmation(employeeSending);
     // confirmation(sharpSending);
 
     // function confirmation(elementTarget) {
     //     elementTarget.addEventListener('click', function(event) {
+    //         event.preventDefault();
+    //         console.log(elementTarget.href);
     //         if (confirm('Click ok to continue')) {
-    //             return true;
+    //             window.location.replace(elementTarget.href);
     //         } else {
     //             event.preventDefault();
     //         }
     //     });
     // }
-    
+
+   
     $(document).ready(function(){
-        $('#registrationData').DataTable();
+        $('#registrationData').DataTable({
+            // "deferRender": true,
+                "processing": true,
+                "serverSide": true,
+                "order": [],
+                ajax: {
+                    "url": "<?= base_url('c_employee_details/get_registration_data'); ?>",
+                    "type": "POST"
+                },
+                "columnDefs": [{
+                    "targets": [7],
+                    "orderable": false
+                }],
+                columns: [
+                    {
+                        data: 0
+                    },
+                    {
+                        data: 1
+                    },
+                    {
+                        data: 2
+                    },
+                    {
+                        data: 3
+                    },
+                    {
+                        data: 4
+                    },
+                    {
+                        data: 5
+                    },
+                    {
+                        data: 6
+                    },
+                    {
+                        data: 7
+                    },
+                    {
+                        data: 8,
+                        render: function(data, type, full, meta) {
+                            const sendEmployeeDetailBtn = '<i class="fa fa-user fa-2x tooltips" data-registrationid=' + data + '></i>';
+                            const sendPrinterDetailBtn = '<i class="fa fa-print fa-2x tooltips" data-registrationid=' + data + '></i>';
+                            const modifyCopierRegisterBtn = '<i class="fa fa-edit fa-2x tooltips" data-registrationid=' + data + '></i>';
+                            return '<center?>' + sendEmployeeDetailBtn + '&nbsp;' +  sendPrinterDetailBtn + '&nbsp;' + modifyCopierRegisterBtn + ' </center>';
+                        }
+                    }
+                    // {
+                    //     data: null,
+                    //     render: function(data, type, full, meta) {
+                    //         const sendPrinterDetail = '<i class="fa fa-print btn btn-primary"></i>';
+                    //         return '<center?>' + sendPrinterDetail + '</center>';
+                    //     }
+                    // }
+                    // {
+                    //     data: null,
+                    //     render: function(data, type, full, meta) {
+                    //         const modifyCopierRegister = '<i class="fa fa-edit btn btn-primary"></i>';
+                    //         return '<center?>' + modifyCopierRegister + '</center>';
+                    //     }
+
+                    // }
+                ]
+        });
+    });
+
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('fa-user')) {
+           if (confirm('Send Employee Details?')) {
+               window.location = '<?= base_url("c_employee_details/send_email_employee_details/") ?>' + e.target.dataset.registrationid;
+           }
+        }
+
+        if (e.target.classList.contains('fa-print')) {
+            if (confirm('Send Printer Details?')) {
+                window.location = '<?= base_url("c_employee_details/send_email_sharp_details/") ?>' + e.target.dataset.registrationid;
+            }
+        }
+
+        if (e.target.classList.contains('fa-edit')) {
+            window.location = '<?= base_url("c_employee_details/modify_copier_registration/") ?>' + e.target.dataset.registrationid;
+        }
+        
     });
 </script>
