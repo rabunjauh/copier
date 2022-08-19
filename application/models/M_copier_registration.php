@@ -312,10 +312,10 @@ class m_copier_registration extends CI_Model {
 		}
     }
 
-    public function get_last_others_password() {
+    public function get_last_sharp_password() {
         $this->db->limit(1);
         $this->db->order_by('id', 'DESC');
-        $this->db->select('others_password');
+        $this->db->select('sharp_password');
         return $this->db->get('copier_id')->row();
     }
 

@@ -11,6 +11,7 @@ class C_employee_details extends CI_Controller {
 		$this->load->model('m_copier_registration');
 		$this->load->model('m_user');
 		$this->load->model('m_employee');
+		$this->load->model('m_ldap_users');
 		if ( !$this->session->userdata('username') ){
 			redirect(base_url(). 'login');
 		}	
@@ -537,11 +538,14 @@ class C_employee_details extends CI_Controller {
 		$mpdf->Output();
 	}
 
-	public function get_last_others_password() {
-		$last_others_password = $this->m_copier_registration->get_last_others_password();
+	public function get_last_sharp_password() {
+		$last_sharp_password = $this->m_copier_registration->get_last_sharp_password();
 
 		// var_dump($last_others_password->others_password);
-		echo $last_others_password->others_password;
+		if ($last_sharp_password ) {
+
+			echo $last_sharp_password->sharp_password;
+		}
 	}
 
 	public function client_subcon() {
@@ -558,6 +562,208 @@ class C_employee_details extends CI_Controller {
 	public function tes ($tesParameter) {
 		echo $tesParameter;
 	}
+
+	public function ldap_users() {
+		$this->WEI();
+		$this->WEIL();
+		$this->WESS_SG();
+	}
+
+	public function WEI() {
+		$username = "sghelpdeskadmin@WASCOENERGY";
+		$password = "w@5c0@sg";
+		$ldapconn = ldap_connect("192.168.40.3");
+		// $ldapconn = ldap_connect("172.88.88.81");
+		@ldap_bind($ldapconn, $username, $password);
+			$ad_departments = [
+				'WEI-BT-Consultant',
+				'WEI-BT-Engineering',
+				'WEI-BT-Finance',
+				'WEI-BT-Groups',
+				'WEI-BT-HR',
+				'WEI-BT-HSE',
+				'WEI-BT-MIS',
+				'WEI-BT-Operations',
+				'WEI-BT-Production',
+				'WEI-BT-Projects',
+				'WEI-BT-QAQC',
+				'WEI-BT-SCM',
+			];
+		
+		foreach ($ad_departments as $department) {
+			$attrib = [
+				"dn", 
+				"displayname", 
+				"mail", 
+				"title", 
+				"mobile", 
+				"st", 
+				"co", 
+				"usncreated", 
+				"department", 
+				"samaccountname"
+			];
+			$dn = "OU=" . $department . ",OU=WEI,OU=Engineering,OU=Wasco Energy Group,DC=wascoenergy,DC=wasco,DC=global";
+			$filter = "(&(&(&(objectCategory=person)(objectClass=user))))";
+			$search = @ldap_search($ldapconn, $dn, $filter, $attrib);
+			
+			if ($search != '') {
+				$entries = ldap_get_entries($ldapconn, $search);
+				if ($entries['count'] > 0) {
+					unset($entries['count']);
+						$this->save_ldap_users($entries, substr($department, 7));
+				}
+			}
+		}
+	}
+	
+	public function WEIL() {
+		$username = "sghelpdeskadmin@WASCOENERGY";
+		$password = "w@5c0@sg";
+		$ldapconn = ldap_connect("192.168.40.3");
+		// $ldapconn = ldap_connect("172.88.88.81");
+		@ldap_bind($ldapconn, $username, $password);
+			$ad_departments = [
+				'WEIL-DB-Admin',
+				'WEIL-DB-Corporate',
+				'WEIL-DB-Engineering',
+				'WEIL-DB-Estimating',
+				'WEIL-DB-Finance',
+				'WEIL-DB-Groups',
+				'WEIL-DB-HR',
+				'WEIL-DB-HSE',
+				'WEIL-DB-MIS',
+				'WEIL-DB-Operations',
+				'WEIL-DB-Projects',
+				'WEIL-DB-QAQC',
+				'WEIL-DB-Sales',
+				'WEIL-DB-SCM',
+				'WEIL-DB-Sites',
+				'WEIL-DB-Sites2',
+				'WEIL-DB-VPN',
+				'WEIL-DB-Workshop',
+			];
+		
+		foreach ($ad_departments as $department) {
+			$attrib = [
+				"dn", 
+				"displayname", 
+				"mail", 
+				"title", 
+				"mobile", 
+				"st", 
+				"co", 
+				"usncreated", 
+				"department", 
+				"samaccountname"
+			];
+			$dn = "OU=" . $department . ",OU=WEIL,OU=Engineering,OU=Wasco Energy Group,DC=wascoenergy,DC=wasco,DC=global";
+			$filter = "(&(&(&(objectCategory=person)(objectClass=user))))";
+			$search = @ldap_search($ldapconn, $dn, $filter, $attrib);
+			if ($search != '') {
+				$entries = ldap_get_entries($ldapconn, $search);
+				if ($entries['count'] > 0) {
+					unset($entries['count']);
+						$this->save_ldap_users($entries, substr($department, 8));
+				}
+			}
+		}
+	}
+	
+	public function WESS_SG() {
+		$username = "sghelpdeskadmin@WASCOENERGY";
+		$password = "w@5c0@sg";
+		$ldapconn = ldap_connect("192.168.40.3");
+		// $ldapconn = ldap_connect("172.88.88.81");
+		@ldap_bind($ldapconn, $username, $password);
+			$ad_departments = [
+				'WESS-SG-Contracts',
+				'WESS-SG-Corporate',
+				'WESS-SG-Engineering',
+				'WESS-SG-Estimating',
+				'WESS-SG-Finance',
+				'WESS-SG-Groups',
+				'WESS-SG-HR',
+				'WESS-SG-HSE',
+				'WESS-SG-MIS',
+				'WESS-SG-Operations',
+				'WESS-SG-Projects',
+				'WESS-SG-QAQC',
+				'WESS-SG-Sales',
+				'WESS-SG-SCM',
+			];
+		
+		foreach ($ad_departments as $department) {
+			$attrib = [
+				"dn", 
+				"displayname", 
+				"mail", 
+				"title", 
+				"mobile", 
+				"st", 
+				"co", 
+				"usncreated", 
+				"department", 
+				"samaccountname"
+			];
+			$dn = "OU=" . $department . ",OU=SG, OU=WESS, OU=Engineering,OU=Wasco Energy Group,DC=wascoenergy,DC=wasco,DC=global";
+			$filter = "(&(&(&(objectCategory=person)(objectClass=user))))";
+			$search = @ldap_search($ldapconn, $dn, $filter, $attrib);
+			if ($search != '') {
+				$entries = ldap_get_entries($ldapconn, $search);
+				if ($entries['count'] > 0) {
+					unset($entries['count']);
+						$this->save_ldap_users($entries, substr($department, 8));
+				}
+			}
+		}
+	}
+
+	public function save_ldap_users($entries, $department) {
+		foreach($entries as $entry) {
+			$ldap_user['email'] = $entry['samaccountname'][0];
+			$ldap_user['name'] = $entry['displayname'][0];
+			$ldap_user['department'] = $department;
+			if(isset($entry['title'][0])) {
+				$ldap_user['position'] = $entry['title'][0];
+			}
+			$this->m_ldap_users->save_ldap_user($ldap_user);
+		}
+	}
+
+	public function get_ldap_users() {
+		$ldap_users = $this->m_ldap_users->get_ldap_users();
+		// var_dump($ldap_users);
+		$no = $_POST['start'];
+		foreach ($ldap_users as $ldap_user) {
+			$row =  array();
+			$row[] = ++$no;
+			$row[] = $ldap_user->name;
+			$row[] = $ldap_user->department;
+			$row[] = $ldap_user->position;
+			$row[] = $ldap_user->email;
+			// $row[] = '<a id = "sendEmployeeDetails" href="' . base_url('c_employee_details/send_email_employee_details/') . $copier_registration->id . '"><i class="fa fa-user fa-2x"></i></a> <a class = "sendPrinterDetails" href="' . base_url('c_employee_details/send_email_sharp_details/') . $copier_registration->id . '"><i class="fa fa-print fa-2x"></i></a> <a href="' . base_url('c_employee_details/modify_copier_registration/') . $copier_registration->id . '"<i class="fa fa-edit fa-2x"></i></a>';
+			$data[] = $row;
+		}
+
+		if (isset($data)) {
+			$output = array(
+				"draw" => $_POST['draw'],
+				"recordsTotal" => $this->m_ldap_users->count_all_data(),
+				"recordsFiltered" => $this->m_ldap_users->count_filtered_data(),
+				"data" => $data
+			);
+		} else {
+			$output = array(
+				"draw" => $_POST['draw'],
+				"recordsTotal" => $this->m_ldap_users->count_all_data(),
+				"recordsFiltered" => $this->$this->m_ldap_users->count_filtered_data(),
+				"data" => array()
+			);
+		}
+		$this->output->set_content_type('application/json')->set_output(json_encode($output));
+	}
+
 }
 
 	

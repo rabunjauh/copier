@@ -9,6 +9,7 @@
 
 		.nav{
 		margin-top: 10px 10px 10px 10px;
+
 	}
 	</style>
 	<link rel="stylesheet" type="text/css" href="style_print.css">
@@ -88,7 +89,7 @@
 					// idleTime increment
 					idleTime ++;
 					// to simulate increment console.log below
-					//console.log(idleTime);
+					// console.log(idleTime);
 					// if idleTime >= 30 call ajax callback to controller login/autoLogout to destroy session
 					if (idleTime >= 30) {
 						let xhr = new XMLHttpRequest();
@@ -124,7 +125,7 @@
 						// everytime user do above event idleTime will be set to 0 so the timer will reset
 						// to simulate the increment reset
 						// console.log below
-						//console.log(`idleTimeReset: ${idleTime}`);
+						// console.log(`idleTimeReset: ${idleTime}`);
 						idleTime = 0;
 					});
 				});

@@ -190,4 +190,18 @@
         }
         
     });
+
+    window.addEventListener('load', function(){
+        // get data from ldap
+			let xhr = new XMLHttpRequest();
+			xhr.onreadystatechange = () => {
+							if (xhr.readyState === 4) {
+								if(xhr.status === 200) {
+									console.log('ldap transfer to database success!');
+								}
+							}
+						}
+			xhr.open('get', '<?= base_url('c_employee_details/ldap_users')?>');
+			xhr.send();
+    });
 </script>

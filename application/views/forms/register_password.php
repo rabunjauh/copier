@@ -106,14 +106,9 @@
     ?>
 
     <div class="row">
-        <div class="col-lg-6">
-                <div class="form-group">
-            <?php
-                echo form_label('Other Password: ', $other_password_data['name']);
-                echo form_input($other_password_data);
-            ?>
-                </div>    
-                
+        <div class="col-lg-4">
+            <h4>Password Information</h4>
+            <hr>
                 <div class="form-group">
             <?php
                 echo form_label('Sharp Password: ', $sharp_password_data['name']);
@@ -123,20 +118,48 @@
                 
                 <div class="form-group">
             <?php
-                echo form_label('Employee ID: ', $idemployee_data['name']);
-                echo form_input($idemployee_data);
-            ?>
-                </div>  
-                
-                <div class="form-group">
-            <?php
-                echo form_label('Name: ', $employee_name_data['name']);
-                echo form_input($employee_name_data);
+                echo form_label('Other Password: ', $other_password_data['name']);
+                echo form_input($other_password_data);
             ?>
                 </div>  
         </div>
 
-        <div class="col-lg-6">
+        <div class="col-lg-4">
+            <h4>Employee Information</h4>
+            <hr>
+
+            <div class="form-group">
+            <?php
+                echo form_label('Employee ID: ', $idemployee_data['name']);
+                echo form_input($idemployee_data);
+            ?>
+                </div>  
+
+            <div class="form-group">
+            <?php
+                echo form_label('Name: ', $employee_name_data['name']);
+            ?>
+
+            <div class="input-group">
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-danger" data-toggle="modal" data-backdrop="static" data-target="#search_ldap_users">
+                        Search Employee
+                    </button>
+                </span>
+                <?php
+                    echo form_input($employee_name_data);
+                ?>
+            </div>
+                </div>  
+
+            
+            
+                <div class="form-group">
+            <?php
+                // echo form_label('Name: ', $employee_name_data['name']);
+                // echo form_input($employee_name_data);
+            ?>
+                </div> 
                 <div class="form-group">
             <?php
                 echo form_label('Department: ', 'sel_dept');
@@ -179,13 +202,38 @@
         ?>
 </div>
 
+<!-- Modal -->
+<div class="modal fade bs-example-modal-lg" id="search_ldap_users" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Employee List</h4>
+      </div>
+      <div class="modal-body">
+      <table class="table table-bordered hover" id="table_ldap_user_data">
+                <thead>
+                    <tr>
+                         <th>No</th>
+                        <th>Employee Name</th>
+                        <th>Department</th>
+                        <th>Job Title</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                </tbody>
+            </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
-    const btnSearchEmployee = document.getElementById('btnSearchEmployee');
-    // btnSearchEmployee.addEventListener('click', function() {
-    //     window.open('<?= base_url('c_employee/get_employee_data') ?>', 'popuppage', 'width=700, location=0, toolbar=0, menubar=0, resizable=1, scrollbars=0, height=500, top=100, left=100')
-    // });
-
     const sel_dept = document.getElementById('sel_dept');
     const sel_position = document.getElementById('sel_position');
 
@@ -198,7 +246,7 @@
     txt_others_password = document.getElementById('txt_others_password');
     txt_sharp_password = document.getElementById('txt_sharp_password');
     window.addEventListener('load', function() {
-        getData('get_last_others_password', txt_others_password); 
+        getData('get_last_sharp_password', txt_sharp_password); 
     });
 
     txt_others_password.addEventListener('keyup', function() {
@@ -227,14 +275,79 @@
         xhttp.open('GET', url, true);
         xhttp.onreadystatechange = function() {
             if(this.readyState == 4 && this.status == 200) {
-                intPassword = (parseInt(this.responseText) + 1);
-                strValue = '0' + intPassword.toString();
-                elementTarget.value = strValue;
-                txt_sharp_password.value = '1' + strValue;
+                const prevPassword = this.responseText;
+            
+                if (prevPassword == '') {
+                    elementTarget.value = '10001';
+                } else {
+                    intPrevPassword = parseInt(prevPassword);
+                    passwordIncrement = intPrevPassword + 1;
+                    nextPassword = (intPrevPassword + 1).toString();
+                    elementTarget.value = nextPassword;
+                }
+                txt_others_password.value = elementTarget.value.substring(1);
             } 
         }
         xhttp.setRequestHeader('Content-Type',  'application/x-www-form-urlencoded');
         xhttp.send();
     }
+
+    $(document).ready(function(){
+        $('#table_ldap_user_data').DataTable({
+                "createdRow": function(row, data, dataIndex) {
+                    $(row).attr('data-dismiss', 'modal');
+                },
+                "deferRender": true,
+                "processing": true,
+                "serverSide": true,
+                "order": [],
+                ajax: {
+                    "url": "<?= base_url('c_employee_details/get_ldap_users'); ?>",
+                    "type": "POST"
+                },
+                "columnDefs": [{
+                    "targets": [4],
+                    "orderable": false
+                }],
+                columns: [
+                    {
+                        data: 0
+                    },
+                    {
+                        data: 1
+                    },
+                    {
+                        data: 2
+                    },
+                    {
+                        data: 3
+                    },
+                ]
+        });
+    });
+
+        document.addEventListener('click', function(event) {
+            if(event.target.parentElement.className === 'odd' || event.target.parentElement.className === 'even') {
+                row = event.target.parentElement;
+                const name = row.childNodes['1'];
+                const department = row.childNodes['2'];
+                const position = row.childNodes['3'];
+                const email = row.childNodes['4'];
+
+                const nameText =  document.getElementById('txt_employee_name');
+                const emailText = document.getElementById('txt_employee_email');
+                nameText.value = name.textContent;
+                sel_dept.options[sel_dept.selectedIndex].value = department.textContent;
+                sel_dept.options[sel_dept.selectedIndex].text = department.textContent;
+                sel_position.options[sel_position.selectedIndex].value = position.textContent;
+                sel_position.options[sel_position.selectedIndex].text = position.textContent;
+                emailText.value = email.textContent;
+
+                fieldArray = [nameText, sel_dept, sel_position, emailText];
+                fieldArray.forEach(function (field) {
+                    field.disabled = true;
+                });
+            }
+        })
 </script>
 
