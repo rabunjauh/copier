@@ -109,7 +109,7 @@
 						clearInterval(idleInterval);
 					}
 				//interval every 1 minute
-				}, 1800000);
+				}, 60000);
 
 				let eventAction = [
 					'mousemove',

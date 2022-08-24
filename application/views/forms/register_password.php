@@ -87,6 +87,12 @@
             'class' => 'form-control',
             'placeholder' => 'Email'
         );
+
+        $ldap_id_data = array(
+            'type' => 'hidden',
+            'name' => 'txt_ldap_id',
+            'id' => 'txt_ldap_id',
+        );
         
         $submit_data = array(
             'type' => 'submit',
@@ -131,6 +137,7 @@
             <div class="form-group">
             <?php
                 echo form_label('Employee ID: ', $idemployee_data['name']);
+                echo form_input($ldap_id_data);
                 echo form_input($idemployee_data);
             ?>
                 </div>  
@@ -214,7 +221,8 @@
       <table class="table table-bordered hover" id="table_ldap_user_data">
                 <thead>
                     <tr>
-                         <th>No</th>
+                        <th>No</th>
+                        <th>ID</th>
                         <th>Employee Name</th>
                         <th>Department</th>
                         <th>Job Title</th>
@@ -243,19 +251,27 @@
         dependentSelect("iddept="+sel_dept_value, url, sel_position);
     });
 
-    txt_others_password = document.getElementById('txt_others_password');
     txt_sharp_password = document.getElementById('txt_sharp_password');
+    txt_others_password = document.getElementById('txt_others_password');
     window.addEventListener('load', function() {
         getData('get_last_sharp_password', txt_sharp_password); 
     });
 
-    txt_others_password.addEventListener('keyup', function() {
+    txt_sharp_password.addEventListener('keyup', function() {
         if (this.value === '') {
-            txt_sharp_password.value = '';    
+            txt_others_password.value = '';    
         } else {
-            txt_sharp_password.value = '1' + this.value;
+            txt_others_password.value = this.value.substring(1);
         }
     });
+    
+    // txt_others_password.addEventListener('keyup', function() {
+    //     if (this.value === '') {
+    //         txt_sharp_password.value = '';    
+    //     } else {
+    //         txt_sharp_password.value = '1' + this.value;
+    //     }
+    // });
 
     function dependentSelect(input, url, elementTarget) {
         let xhttp = new XMLHttpRequest();
@@ -306,7 +322,7 @@
                     "type": "POST"
                 },
                 "columnDefs": [{
-                    "targets": [4],
+                    "targets": [5],
                     "orderable": false
                 }],
                 columns: [
@@ -322,6 +338,9 @@
                     {
                         data: 3
                     },
+                    {
+                        data: 4
+                    },
                 ]
         });
     });
@@ -329,13 +348,17 @@
         document.addEventListener('click', function(event) {
             if(event.target.parentElement.className === 'odd' || event.target.parentElement.className === 'even') {
                 row = event.target.parentElement;
-                const name = row.childNodes['1'];
-                const department = row.childNodes['2'];
-                const position = row.childNodes['3'];
-                const email = row.childNodes['4'];
+                const id = row.childNodes['1']
+                const name = row.childNodes['2'];
+                const department = row.childNodes['3'];
+                const position = row.childNodes['4'];
+                const email = row.childNodes['5'];
 
                 const nameText =  document.getElementById('txt_employee_name');
                 const emailText = document.getElementById('txt_employee_email');
+                const ldap_id = document.getElementById('txt_ldap_id');
+
+                ldap_id.value = id.textContent;
                 nameText.value = name.textContent;
                 sel_dept.options[sel_dept.selectedIndex].value = department.textContent;
                 sel_dept.options[sel_dept.selectedIndex].text = department.textContent;

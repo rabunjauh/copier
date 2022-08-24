@@ -7,18 +7,19 @@ class M_ldap_users extends CI_Model {
 	// }
 
     var $table = 'ldap_users';
-    var $column_order = array(null, 'name', 'department', 'position', 'email');
-    var $order = array(null, 'name', 'department', 'position', 'email');
+    var $column_order = array(null, 'name', 'department', 'position', 'ldap_email', 'id');
+    var $order = array(null, 'name', 'department', 'position', 'email', 'id');
 
     private function _get_ldap_users_query() {
         $this->db->from($this->table);
 
         if (isset($_POST['search']['value'])) {
             $this->db->group_start();
-            $this->db->like('email', $_POST['search']['value']);
+            $this->db->like('ldap_email', $_POST['search']['value']);
             $this->db->or_like('name', $_POST['search']['value']);
             $this->db->or_like('department', $_POST['search']['value']);
             $this->db->or_like('position', $_POST['search']['value']);
+            $this->db->or_like('id', $_POST['search']['value']);
             $this->db->group_end();
         }
 
@@ -31,8 +32,10 @@ class M_ldap_users extends CI_Model {
 
     public function get_ldap_users() {
         $this->_get_ldap_users_query();
-        if ($_POST['length'] != -1) {
-            $this->db->limit($_POST['length'], $_POST['start']);
+        if (isset($_POST['length'])) {
+            if ($_POST['length'] != -1) {
+                $this->db->limit($_POST['length'], $_POST['start']);
+            }
         }
         $query = $this->db->get();
         return $query->result();
@@ -47,16 +50,15 @@ class M_ldap_users extends CI_Model {
 
     public function count_all_data()
     {
-        $this->db->from($this->table);
-        return $this->db->count_all_results();
+        return $this->db->count_all_results($this->table);
     }
 
 	public function save_ldap_user($ldap_user) {
-		$email = $ldap_user['email'];
+		$email = $ldap_user['ldap_email'];
 		$name = $ldap_user['name'];
 		$department = $ldap_user['department'];
 		$position = $ldap_user['position'];
-		$sql = "INSERT IGNORE INTO ldap_users(email, name, department, position) VALUES ('$email', '$name', '$department', '$position')";
+		$sql = "INSERT IGNORE INTO ldap_users(ldap_email, name, department, position) VALUES ('$email', '$name', '$department', '$position')";
 		$this->db->query($sql);
 		if ($this->db->affected_rows() == 1) {
             return $this->db->insert_id();

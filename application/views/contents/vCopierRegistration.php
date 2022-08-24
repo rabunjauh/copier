@@ -8,9 +8,9 @@
 		<div class="col-lg-6">			
 			<a href="<?php echo base_url('c_employee_details/register_password'); ?>" class="btn btn-primary my-1">Register User</a>
 			<a href="<?php echo base_url('c_employee_details/export_register'); ?>" class="btn btn-success my-1">Download Register</a>
-			<button type="button" class="btn btn-warning" data-toggle="modal" data-target="#myModal">
+			<!-- <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#myModal">
                 Form Upload Register
-            </button>
+            </button> -->
 		</div>
 	</div>	
 	<br>

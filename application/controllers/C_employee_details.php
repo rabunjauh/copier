@@ -19,41 +19,6 @@ class C_employee_details extends CI_Controller {
 
 	
 	public function index($page = 0) {
-		// $data = [];
-		// $config = [];
-		// $config['full_tag_open'] = '<ul class="pagination">';
-	    // $config['full_tag_close'] = '</ul>';
-	    // $config['num_tag_open'] = '<li>';
-	    // $config['num_tag_close'] = '</li>';
-	    // $config['cur_tag_open'] = '<li class="active"><span>';
-	    // $config['cur_tag_close'] = '<span class="sr-only">(current)</span></span></li>';
-	    // $config['prev_tag_open'] = '<li>';
-	    // $config['prev_tag_close'] = '</li>';
-	    // $config['next_tag_open'] = '<li>';
-	    // $config['next_tag_close'] = '</li>';
-	    // $config['first_link'] = '&laquo;';
-	    // $config['prev_link'] = '&lsaquo;';
-	    // $config['last_link'] = '&raquo;';
-	    // $config['next_link'] = '&rsaquo;';
-	    // $config['first_tag_open'] = '<li>';
-	    // $config['first_tag_close'] = '</li>';
-	    // $config['last_tag_open'] = '<li>';
-	    // $config['last_tag_close'] = '</li>';
-		// $config['base_url'] = base_url('c_employee_details/index');
-		// $total_row = $this->m_copier_registration->count_registration_data();
-		// // $config['total_rows'] = 50;
-		// $config['total_rows'] = $total_row;
-		// $config['per_page'] = 10;
-		// $config['num_links'] = 5;
-        // $config["uri_segment"] = 3;
-        // $this->pagination->initialize($config);
-		// if($this->uri->segment(3)){
-        //     $page = ($this->uri->segment(3)) ;
-        // }else{
-        //     $page = 0;
-        // }
-		// $data['copier_registrations'] = $this->m_copier_registration->get_registration_data();
-		// $data['copier_registrations'] = $this->m_copier_registration->get_registration_data($config['per_page'], $page);
 		$data['header'] = $this->load->view('headers/head', '', TRUE);
 		$data['menu'] = '';
 		$data['navigation'] = $this->load->view('headers/navigation', '', TRUE);
@@ -64,21 +29,30 @@ class C_employee_details extends CI_Controller {
 	}
 
 	public function get_registration_data() {
-		// var_dump($this->input->post());
 		$copier_registrations = $this->m_copier_registration->get_registration_data();
 		$no = $_POST['start'];
 		foreach ($copier_registrations as $copier_registration) {
+			if ($copier_registration->ldap_id === null || $copier_registration->name === null){
+				$employeename = $copier_registration->employeename;
+				$deptdesc = $copier_registration->deptdesc;
+				$positiondesc = $copier_registration->positiondesc;
+				$email = $copier_registration->email;
+			} else {
+				$employeename = $copier_registration->name;
+				$deptdesc = $copier_registration->department;
+				$positiondesc = $copier_registration->position;
+				$email = $copier_registration->ldap_email;
+			}
 			$row =  array();
 			$row[] = ++$no;
 			$row[] = $copier_registration->idemployee;
 			$row[] = $copier_registration->sharp_password;
 			$row[] = $copier_registration->others_password;
-			$row[] = $copier_registration->employeename;
-			$row[] = $copier_registration->deptdesc;
-			$row[] = $copier_registration->positiondesc;
-			$row[] = $copier_registration->email;
+			$row[] = $employeename;
+			$row[] = $deptdesc;
+			$row[] = $positiondesc;
+			$row[] = $email;
 			$row[] = $copier_registration->id;
-			// $row[] = '<a id = "sendEmployeeDetails" href="' . base_url('c_employee_details/send_email_employee_details/') . $copier_registration->id . '"><i class="fa fa-user fa-2x"></i></a> <a class = "sendPrinterDetails" href="' . base_url('c_employee_details/send_email_sharp_details/') . $copier_registration->id . '"><i class="fa fa-print fa-2x"></i></a> <a href="' . base_url('c_employee_details/modify_copier_registration/') . $copier_registration->id . '"<i class="fa fa-edit fa-2x"></i></a>';
 			$data[] = $row;
 		}
 
@@ -104,7 +78,6 @@ class C_employee_details extends CI_Controller {
         if (!$selSearch AND !$txtSearch) {
                 $selSearch = $this->input->post('selSearch');
                 $txtSearch = htmlspecialchars($this->input->post('txtSearch'));
-                // $selDepartment = $this->input->post('selDepartment');
             }
 		$config['full_tag_open'] = '<ul class="pagination">';
 	    $config['full_tag_close'] = '</ul>';
@@ -167,17 +140,12 @@ class C_employee_details extends CI_Controller {
 			$this->form_validation->set_rules('txt_others_password', 'Others Password', 'is_unique[copier_id.others_password]');
 			$this->form_validation->set_rules('txt_sharp_password', 'Sharp Password', 'is_unique[copier_id.sharp_password]');
 			$this->form_validation->set_rules('txt_idemployee', 'Employee ID', 'is_unique[copier_id.idemployee]');
-			$this->form_validation->set_rules('txt_employee_name', 'Employee Name');
-			$this->form_validation->set_rules('txt_employee_email', 'Email');
 
 			if ($this->form_validation->run()) {
 				$form_info['txt_others_password'] = $this->input->post('txt_others_password', TRUE);
 				$form_info['txt_sharp_password'] = $this->input->post('txt_sharp_password', TRUE);
 				$form_info['txt_idemployee'] = $this->input->post('txt_idemployee', TRUE);
-				$form_info['txt_employee_name'] = $this->input->post('txt_employee_name', TRUE);
-				$form_info['sel_dept'] = $this->input->post('sel_dept', TRUE);
-				$form_info['sel_position'] = $this->input->post('sel_position', TRUE);
-				$form_info['txt_employee_email'] = $this->input->post('txt_employee_email', TRUE);
+				$form_info['ldap_id'] = $this->input->post('txt_ldap_id', TRUE);
 				if ($this->m_copier_registration->save_register($form_info)) {
 					$message = '<div class="alert alert-success">Success</div>';
 					$this->session->set_flashdata('message', $message);
@@ -228,10 +196,11 @@ class C_employee_details extends CI_Controller {
 			$form_info['txt_other_password'] = $this->input->post('txt_other_password', TRUE);
 			$form_info['txt_sharp_password'] = $this->input->post('txt_sharp_password', TRUE);
 			$form_info['txt_employeeid'] = $this->input->post('txt_employeeid', TRUE);
-			$form_info['txt_employeename'] = $this->input->post('txt_employeename', TRUE);
-			$form_info['sel_dept'] = $this->input->post('sel_dept', TRUE);
-			$form_info['sel_position'] = $this->input->post('sel_position', TRUE);
-			$form_info['txt_email'] = $this->input->post('txt_email', TRUE);
+			// $form_info['txt_employeename'] = $this->input->post('txt_employeename', TRUE);
+			$form_info['ldap_id'] = $this->input->post('txt_ldap_id', TRUE);
+			// $form_info['sel_dept'] = $this->input->post('sel_dept', TRUE);
+			// $form_info['sel_position'] = $this->input->post('sel_position', TRUE);
+			// $form_info['txt_email'] = $this->input->post('txt_email', TRUE);
 			if ($this->m_copier_registration->update_register($form_info, $id)) {
 				$message = '<div class="alert alert-success">Success</div>';
 				$this->session->set_flashdata('message', $message);
@@ -275,13 +244,13 @@ class C_employee_details extends CI_Controller {
         $sender = 'no-reply@wascoenergy.com';
         $pass = 'password.88';
 		$data = [];
-		$data['username'] = $employee->email;
-		$data['recipient'] = $employee->email . '@wascoenergy.com';
+		$data['username'] = ($employee->ldap_id === null) ? $employee->email : $employee->ldap_email;
+		$data['recipient'] = ($employee->ldap_id === null) ? $employee->email : $employee->ldap_email . '@wascoenergy.com';
 		$data['sender'] = 'no-reply@wascoenergy.com';
 		$data['idemployee'] = $employee->idemployee;
-		$data['employeename'] = $employee->employeename;
-		$data['deptdesc'] = $employee->deptdesc;
-		$data['positiondesc'] = $employee->positiondesc;
+		$data['employeename'] = ($employee->ldap_id === null) ? $employee->employeename : $employee->name;
+		$data['deptdesc'] = ($employee->ldap_id === null) ? $employee->deptdesc : $employee->department;
+		$data['positiondesc'] = ($employee->ldap_id === null) ? $employee->positiondesc : $employee->position;
 		$data['others_password'] = $employee->others_password;
 		$data['sharp_password'] = $employee->sharp_password;
 		$config = [];
@@ -298,20 +267,20 @@ class C_employee_details extends CI_Controller {
 
 		$this->email->initialize($config);			
 		$this->email->from($sender, 'WEI MIS');
-		$this->email->to($employee->email . '@wascoenergy.com');
+		$this->email->to((($employee->ldap_id === null) ? $employee->email : $employee->ldap_email) . '@wascoenergy.com');
 		$this->email->cc('wahyu.maulana@wascoenergy.com, mustafa.m@wascoenergy.com, ichwan.maulana@wascoenergy.com');
 		$this->email->subject('Employee Details');
 		$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-to-Create-Timesheet.pdf");
 		$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-Input-Password-Printer-Sharp.pdf");
 		$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-Scan-Doc-Machine-Printer-Sharp.pdf");
 		$this->email->message($this->load->view('contents/message_body', $data, TRUE));
-		
+		// var_dump($this->email);die;
 		if ($this->email->send()) {
-			$message = '<div class="alert alert-success">Email sent to ' . $data['recipient'] . ' successfully</div>';
+			$message = '<div class="alert alert-success">Employee Details sent to ' . $data['recipient'] . ' successfully</div>';
             $this->session->set_flashdata('message', $message);
             redirect(base_url('c_employee_details'));
 		} else {
-			$message = '<div class="alert alert-danger">The email was not sent!</div>';
+			$message = '<div class="alert alert-danger">Employee Details was not sent!</div>';
             $this->session->set_flashdata('message', $message);
             redirect(base_url('c_employee_details'));
 		}
@@ -323,12 +292,12 @@ class C_employee_details extends CI_Controller {
         $pass = 'password.88';
 		$employee = $this->m_copier_registration->get_registration_by_id($id);
 		$data = [];
-		$data['recipient'] = $employee->email . '@wascoenergy.com';
+		$data['recipient'] = ($employee->ldap_id === null) ? $employee->email : $employee->ldap_email . '@wascoenergy.com';
 		$data['sender'] = $sender;
 		$data['idemployee'] = $employee->idemployee;
-		$data['employeename'] = $employee->employeename;
-		$data['deptdesc'] = $employee->deptdesc;
-		$data['positiondesc'] = $employee->positiondesc;
+		$data['employeename'] = ($employee->ldap_id === null ) ? $employee->employeename : $employee->name;
+		$data['deptdesc'] =($employee->ldap_id === null ) ?  $employee->deptdesc : $employee->department;
+		$data['positiondesc'] = ($employee->ldap_id === null ) ? $employee->positiondesc : $employee->position;
 		$data['others_password'] = $employee->others_password;
 		$data['sharp_password'] = $employee->sharp_password;
 		$config = [];
@@ -346,19 +315,18 @@ class C_employee_details extends CI_Controller {
 		$this->email->initialize($config);	
 
 		$this->email->from($sender, 'WEI MIS');
-		$this->email->to($employee->email . '@wascoenergy.com');
+		$this->email->to((($employee->ldap_id === null) ? $employee->email : $employee->ldap_email) . '@wascoenergy.com');
 		$this->email->cc('wahyu.maulana@wascoenergy.com, mustafa.m@wascoenergy.com, ichwan.maulana@wascoenergy.com');
 		$this->email->subject('Sharp Printer Details');
       		$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-to-Create-Timesheet.pdf");
 		$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-Input-Password-Printer-Sharp.pdf");
-		//$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-Scan-Doc-Machine-Printer-Sharp.pdf");
 		$this->email->message($this->load->view('contents/message_body_printer', $data, TRUE));
 		if ($this->email->send()) {
-			$message = '<div class="alert alert-success">Email sent to ' . $data['recipient'] . ' successfully</div>';
+			$message = '<div class="alert alert-success">Sharp Detail sent to ' . $data['recipient'] . ' successfully</div>';
             $this->session->set_flashdata('message', $message);
             redirect(base_url('c_employee_details'));
 		} else {
-			$message = '<div class="alert alert-danger">The email was not sent!</div>';
+			$message = '<div class="alert alert-danger">Sharp Detail was not sent!</div>';
             $this->session->set_flashdata('message', $message);
             redirect(base_url('c_employee_details'));
 		}
@@ -460,10 +428,10 @@ class C_employee_details extends CI_Controller {
 			$sheet->setCellValue('B'. $row_number, $data->idemployee);
 			$sheet->setCellValue('C'. $row_number, $data->others_password);
 			$sheet->setCellValue('D'. $row_number, $data->sharp_password);
-			$sheet->setCellValue('E'. $row_number, $data->employeename);
-			$sheet->setCellValue('F'. $row_number, $data->deptdesc);
-			$sheet->setCellValue('G'. $row_number, $data->positiondesc);
-			$sheet->setCellValue('H'. $row_number, $data->email);
+			$sheet->setCellValue('E'. $row_number, ($data->ldap_id === null) ? $data->employeename : $data->name);
+			$sheet->setCellValue('F'. $row_number, ($data->ldap_id === null) ? $data->deptdesc : $data->department);
+			$sheet->setCellValue('G'. $row_number, ($data->ldap_id === null) ? $data->positiondesc : $data->position);
+			$sheet->setCellValue('H'. $row_number, ($data->ldap_id === null) ? $data->email : $data->ldap_email);
 			$row_number++;
 		}
 
@@ -611,7 +579,8 @@ class C_employee_details extends CI_Controller {
 				$entries = ldap_get_entries($ldapconn, $search);
 				if ($entries['count'] > 0) {
 					unset($entries['count']);
-						$this->save_ldap_users($entries, substr($department, 7));
+						$this->save_ldap_users($entries);
+						// $this->save_ldap_users($entries, substr($department, 7));
 				}
 			}
 		}
@@ -719,10 +688,12 @@ class C_employee_details extends CI_Controller {
 		}
 	}
 
-	public function save_ldap_users($entries, $department) {
+	public function save_ldap_users($entries) {
 		foreach($entries as $entry) {
-			$ldap_user['email'] = $entry['samaccountname'][0];
+			$ldap_user['ldap_email'] = $entry['samaccountname'][0];
 			$ldap_user['name'] = $entry['displayname'][0];
+			$department = $this->verify_department($entry['department'][0]);
+			// die;
 			$ldap_user['department'] = $department;
 			if(isset($entry['title'][0])) {
 				$ldap_user['position'] = $entry['title'][0];
@@ -730,18 +701,144 @@ class C_employee_details extends CI_Controller {
 			$this->m_ldap_users->save_ldap_user($ldap_user);
 		}
 	}
+	// public function save_ldap_users($entries, $department) {
+	// 	foreach($entries as $entry) {
+	// 		$ldap_user['ldap_email'] = $entry['samaccountname'][0];
+	// 		$ldap_user['name'] = $entry['displayname'][0];
+	// 		$ldap_user['department'] = $department;
+	// 		if(isset($entry['title'][0])) {
+	// 			$ldap_user['position'] = $entry['title'][0];
+	// 		}
+	// 		$this->m_ldap_users->save_ldap_user($ldap_user);
+	// 	}
+	// }
 
+	public function verify_department ($department) {
+		var_dump($department);
+		if(
+			strpos($department, 'Engineering') !== false ||
+			strpos($department, 'engineering') !== false 
+		) {
+			$departmentResult = 'Engineering';
+		} elseif(
+			strpos($department, 'Finance') !== false || 
+			strpos($department, 'finance') !== false
+		) {
+			$departmentResult = 'Finance';	
+		} elseif(
+			strpos($department, 'HR') !== false || 
+			strpos($department, 'hr') !== false
+		) {
+			$departmentResult = 'HR';	
+		} elseif(
+			strpos($department, 'HSE') !== false || 
+			strpos($department, 'hse') !== false
+		) {
+			$departmentResult = 'HSE';	
+		} elseif(
+			strpos($department, 'MIS') !== false || 
+			strpos($department, 'mis') !== false
+		) {
+			$departmentResult = 'MIS';	
+		} elseif(
+			strpos($department, 'QAQC') !== false || 
+			strpos($department, 'qaqc') !== false || 
+			strpos($department, 'QA/QC') !== false ||
+			strpos($department, 'qa/qc') !== false ||
+			strpos($department, 'QC') !== false ||
+			strpos($department, 'qc') !== false ||
+			strpos($department, 'QA') !== false ||
+			strpos($department, 'qa') !== false
+		) {
+			$departmentResult = 'QA/QC';	
+		} elseif(
+			strpos($department, 'SCM') !== false || 
+			strpos($department, 'scm') !== false ||
+			strpos($department, 'Supply Chain') !== false ||  
+			strpos($department, 'supply Chain') !== false  
+		) {
+			$departmentResult = 'Supply Chain';	
+		} elseif(
+			strpos($department, 'Aftermarket') !== false || 
+			strpos($department, 'aftermarket') !== false ||
+			strpos($department, 'Sales') !== false || 
+			strpos($department, 'sales') !== false || 
+			strpos($department, 'Sales & Marketing') !== false || 
+			strpos($department, 'Marketing') !== false || 
+			strpos($department, 'marketing') !== false
+		) {
+			$departmentResult = 'Sales & Marketing';	
+		} elseif(
+			strpos($department, 'Workshop') !== false || 
+			strpos($department, 'workshop') !== false
+		) {
+			$departmentResult = 'Workshop';	
+		} elseif(
+			strpos($department, 'Contracts') !== false || 
+			strpos($department, 'contracts') !== false || 
+			strpos($department, 'Contract') !== false || 
+			strpos($department, 'contract') !== false 
+		) {
+			$departmentResult = 'Workshop';	
+		}  elseif(
+			strpos($department, 'PMT') !== false || 
+			strpos($department, 'pmt') !== false || 
+			strpos($department, 'Project & Operations') !== false || 
+			strpos($department, 'project & operations') !== false || 
+			strpos($department, 'Project & Operation') !== false || 
+			strpos($department, 'project & operation') !== false || 
+			strpos($department, 'Project') !== false ||
+			strpos($department, 'project') !== false ||
+			strpos($department, 'Projects') !== false || 
+			strpos($department, 'projects') !== false || 
+			strpos($department, 'Operation') !== false || 
+			strpos($department, 'operation') !== false || 
+			strpos($department, 'Production') !== false ||
+			strpos($department, 'production') !== false ||
+			strpos($department, 'Productions') !== false ||
+			strpos($department, 'productions') !== false 
+		) {
+			$departmentResult = 'Project & Operations';
+		} elseif(
+			strpos($department, 'Estimating') !== false || 
+			strpos($department, 'estimating') !== false || 
+			strpos($department, 'Tendering & Estimation') !== false || 
+			strpos($department, 'tendering & estimation') !== false || 
+			strpos($department, 'estimation') !== false
+		) {
+			$departmentResult = 'Tendering & Estimation';
+		} elseif(
+			strpos($department, 'General Management') !== false || 
+			strpos($department, 'general management') !== false || 
+			strpos($department, 'Management') !== false || 
+			strpos($department, 'management') !== false 
+		) {
+			$departmentResult = 'General Management';
+		} elseif(
+			strpos($department, 'Instrumentation') !== false || 
+			strpos($department, 'instrumentation') !== false
+		) {
+			$departmentResult = 'Instrumentation';
+		} else {
+			$departmentResult = 'Uncategorized';
+		}
+
+		return $departmentResult;
+	}
 	public function get_ldap_users() {
 		$ldap_users = $this->m_ldap_users->get_ldap_users();
-		// var_dump($ldap_users);
+		// var_dump($this->m_ldap_users->count_filtered_data());
+		// var_dump($this->m_ldap_users->count_all_data());die;
+		// var_dump($ldap_users);die;
 		$no = $_POST['start'];
 		foreach ($ldap_users as $ldap_user) {
 			$row =  array();
 			$row[] = ++$no;
+			$row[] = $ldap_user->id;
 			$row[] = $ldap_user->name;
 			$row[] = $ldap_user->department;
 			$row[] = $ldap_user->position;
-			$row[] = $ldap_user->email;
+			$row[] = $ldap_user->ldap_email;
 			// $row[] = '<a id = "sendEmployeeDetails" href="' . base_url('c_employee_details/send_email_employee_details/') . $copier_registration->id . '"><i class="fa fa-user fa-2x"></i></a> <a class = "sendPrinterDetails" href="' . base_url('c_employee_details/send_email_sharp_details/') . $copier_registration->id . '"><i class="fa fa-print fa-2x"></i></a> <a href="' . base_url('c_employee_details/modify_copier_registration/') . $copier_registration->id . '"<i class="fa fa-edit fa-2x"></i></a>';
 			$data[] = $row;
 		}
@@ -757,7 +854,7 @@ class C_employee_details extends CI_Controller {
 			$output = array(
 				"draw" => $_POST['draw'],
 				"recordsTotal" => $this->m_ldap_users->count_all_data(),
-				"recordsFiltered" => $this->$this->m_ldap_users->count_filtered_data(),
+				"recordsFiltered" => $this->m_ldap_users->count_filtered_data(),
 				"data" => array()
 			);
 		}
