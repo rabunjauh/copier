@@ -137,15 +137,27 @@ class C_employee_details extends CI_Controller {
     public function register_password() {
 		if ($this->input->post()) {
 			$this->load->library('form_validation');
-			$this->form_validation->set_rules('txt_others_password', 'Others Password', 'is_unique[copier_id.others_password]');
 			$this->form_validation->set_rules('txt_sharp_password', 'Sharp Password', 'is_unique[copier_id.sharp_password]');
 			$this->form_validation->set_rules('txt_idemployee', 'Employee ID', 'is_unique[copier_id.idemployee]');
 
 			if ($this->form_validation->run()) {
-				$form_info['txt_others_password'] = $this->input->post('txt_others_password', TRUE);
+				$form_info['client'] = $this->input->post('client', TRUE);
 				$form_info['txt_sharp_password'] = $this->input->post('txt_sharp_password', TRUE);
-				$form_info['txt_idemployee'] = $this->input->post('txt_idemployee', TRUE);
-				$form_info['ldap_id'] = $this->input->post('txt_ldap_id', TRUE);
+				$form_info['txt_others_password'] = substr($form_info['txt_sharp_password'], 1);
+				if($form_info['client']) {
+					$form_info['ldap_id'] = null;
+					$form_info['txt_employee_name'] = $this->input->post('txt_employee_name', TRUE);
+					$form_info['iddept'] = $form_info['client'];
+					$form_info['txt_idemployee'] = null;
+				} else {
+					$form_info['ldap_id'] = $this->input->post('txt_ldap_id', TRUE);
+					$form_info['txt_employee_name'] = null;
+					$form_info['iddept'] = null;
+					
+					$form_info['txt_idemployee'] = $this->input->post('txt_idemployee');
+				}
+
+				$form_info['txt_idposition'] = null;
 				if ($this->m_copier_registration->save_register($form_info)) {
 					$message = '<div class="alert alert-success">Success</div>';
 					$this->session->set_flashdata('message', $message);
@@ -193,14 +205,21 @@ class C_employee_details extends CI_Controller {
 
 		// if ($this->form_validation->run()) {
 			$id = $this->input->post('copier_id', TRUE);
-			$form_info['txt_other_password'] = $this->input->post('txt_other_password', TRUE);
+			$form_info['client'] = $this->input->post('client_value', TRUE);
 			$form_info['txt_sharp_password'] = $this->input->post('txt_sharp_password', TRUE);
-			$form_info['txt_employeeid'] = $this->input->post('txt_employeeid', TRUE);
-			// $form_info['txt_employeename'] = $this->input->post('txt_employeename', TRUE);
-			$form_info['ldap_id'] = $this->input->post('txt_ldap_id', TRUE);
-			// $form_info['sel_dept'] = $this->input->post('sel_dept', TRUE);
-			// $form_info['sel_position'] = $this->input->post('sel_position', TRUE);
-			// $form_info['txt_email'] = $this->input->post('txt_email', TRUE);
+			$form_info['txt_others_password'] = substr($form_info['txt_sharp_password'], 1);
+
+			if($form_info['client']) {
+				$form_info['ldap_id'] = null;
+				$form_info['txt_employeename'] = $this->input->post('txt_employeename', TRUE);
+				$form_info['iddept'] = $form_info['client'];
+				$form_info['txt_idemployee'] = null;
+			} else {
+				$form_info['ldap_id'] = $this->input->post('txt_ldap_id', TRUE);
+				$form_info['txt_employee_name'] = null;
+				$form_info['iddept'] = null;
+				$form_info['txt_employeeid'] = $this->input->post('txt_employeeid', TRUE);
+			}
 			if ($this->m_copier_registration->update_register($form_info, $id)) {
 				$message = '<div class="alert alert-success">Success</div>';
 				$this->session->set_flashdata('message', $message);
@@ -508,10 +527,7 @@ class C_employee_details extends CI_Controller {
 
 	public function get_last_sharp_password() {
 		$last_sharp_password = $this->m_copier_registration->get_last_sharp_password();
-
-		// var_dump($last_others_password->others_password);
 		if ($last_sharp_password ) {
-
 			echo $last_sharp_password->sharp_password;
 		}
 	}

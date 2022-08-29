@@ -23,6 +23,8 @@ class m_copier_registration extends CI_Model {
         ');
         $this->db->where_not_in('c.iddept', 22);
         $this->db->where_not_in('c.iddept', 23);
+        $this->db->or_where('c.ldap_id !=', null);
+
 
         $this->db->join('tblfile_department td', 'td.iddept = c.iddept', 'left');
         $this->db->join('tblfile_position tp', 'tp.idposition = c.idposition', 'left');
@@ -242,9 +244,12 @@ class m_copier_registration extends CI_Model {
     }
 
     public function save_register($input) {
-		$info['idemployee'] = html_escape($input['txt_idemployee']);
+        $info['idemployee'] = html_escape($input['txt_idemployee']);
 		$info['others_password'] = html_escape($input['txt_others_password']);
 		$info['sharp_password'] = html_escape($input['txt_sharp_password']);
+		$info['iddept'] = html_escape($input['iddept']);
+		$info['idposition'] = html_escape($input['txt_idposition']);
+		$info['employeename'] = html_escape($input['txt_employee_name']);
 		$info['ldap_id'] = html_escape($input['ldap_id']);
 		$this->db->insert('copier_id', $info);
 		if ($this->db->affected_rows() == 1) {
@@ -256,8 +261,10 @@ class m_copier_registration extends CI_Model {
 
     public function update_register($input, $id) {
         $info['idemployee'] = html_escape($input['txt_employeeid']);
-		$info['others_password'] = html_escape($input['txt_other_password']);
+        $info['employeename'] = html_escape($input['txt_employeename']);
+		$info['iddept'] = html_escape($input['iddept']);
 		$info['sharp_password'] = html_escape($input['txt_sharp_password']);
+		$info['others_password'] = html_escape($input['txt_others_password']);
 		$info['ldap_id'] = html_escape($input['ldap_id']);
         $this->db->where('id', $id);
 		$this->db->update('copier_id', $info);
@@ -280,7 +287,7 @@ class m_copier_registration extends CI_Model {
                     c.id,
                     c.idemployee,
                     c.employeename,
-                    td.deptdesc,
+                    td.iddept,
                     tp.positiondesc,
                     c.email,
                     c.sharp_password,
@@ -288,9 +295,8 @@ class m_copier_registration extends CI_Model {
         ');
         $this->db->join('tblfile_department td', 'td.iddept = c.iddept', 'left');
         $this->db->join('tblfile_position tp', 'tp.idposition = c.idposition', 'left');
-        $client_subcon = array('CLIENT', 'SUBCON');
-        $this->db->where_in('td.deptdesc', $client_subcon);
-        $this->db->order_by('c.others_password', 'DESC');
+        $this->db->where('td.iddept', 22);
+        $this->db->order_by('c.sharp_password', 'DESC');
         return $this->db->get('copier_id c')->result();
     }
 }

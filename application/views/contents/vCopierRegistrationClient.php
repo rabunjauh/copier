@@ -20,13 +20,9 @@
                 <thead>
                     <tr>
                         <th>No</th>
-                        <th>Employee ID</th>
                         <th>Sharp Password</th>
                         <th>Other Password</th>
                         <th>Name</th>
-                        <th>Department</th>
-                        <th>Job Title</th>
-                        <th>Email</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -37,13 +33,9 @@
                     ?>
                                 <tr>
                                     <td><?php echo $no; ?></td>
-                                    <td><?php echo $copier_registration->idemployee; ?></td>
                                     <td><?php echo $copier_registration->sharp_password; ?></td>
                                     <td><?php echo $copier_registration->others_password; ?></td>
                                     <td><?php echo $copier_registration->employeename; ?></td>
-                                    <td><?php echo $copier_registration->deptdesc; ?></td>
-                                    <td><?php echo $copier_registration->positiondesc; ?></td>
-                                    <td><?php echo $copier_registration->email; ?></td>
                                     <td>
                                         <a href="<?= base_url('c_employee_details/modify_copier_registration/' . $copier_registration->id); ?>"><i class="fa fa-edit fa-2x"></i></a>
                                     </td>

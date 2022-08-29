@@ -6,14 +6,50 @@
     </div>
 
     <?php 
-        $txt_other_password_data = array(
-            'type' => 'text',
-            'name' => 'txt_other_password',
-            'id' => 'txt_other_password',
-            'class' => 'form-control',
-            'value'  => $copier_registration->others_password,
-            'placeholder' => 'Other Password'
-        );
+        // $txt_other_password_data = array(
+        //     'type' => 'text',
+        //     'name' => 'txt_other_password',
+        //     'id' => 'txt_other_password',
+        //     'class' => 'form-control',
+        //     'value'  => $copier_registration->others_password,
+        //     'placeholder' => 'Other Password'
+        // );
+
+        if($copier_registration->iddept === '22') {
+
+            $is_client = array(
+                'name' => 'client',
+                'id' => 'client',
+                'value' => '22',
+                'checked' => true,
+                'disabled' => 'disabled'
+            );
+            
+            $is_client_value = array(
+                'type' => 'hidden',
+                'name' => 'client_value',
+                'id' => 'client_value',
+                'value' => '22',
+            );
+
+        } else {
+
+            $is_client = array(
+                'name' => 'client',
+                'id' => 'client',
+                'value' => null,
+                'checked' => false,
+                'disabled' => 'disabled'
+                
+            );
+
+            $is_client_value = array(
+                'type' => 'hidden',
+                'name' => 'client_value',
+                'id' => 'client_value',
+                'value' => null,
+            );
+        }
        
         $txt_sharp_password_data = array(
             'type' => 'text',
@@ -21,7 +57,8 @@
             'id' => 'txt_sharp_password',
             'class' => 'form-control',
             'value'  => $copier_registration->sharp_password,
-            'placeholder' => 'Other Password'
+            'placeholder' => 'Sharp Password',
+            'readonly' => 'true'
         );
 
         $idemployee_data = array(
@@ -90,6 +127,7 @@
             'type' => 'hidden',
             'name' => 'txt_ldap_id',
             'id' => 'txt_ldap_id',
+            'value' => ($copier_registration->ldap_id === null) ? '' : $copier_registration->ldap_id 
         );
 
         $submit_data = array(
@@ -102,30 +140,19 @@
         echo validation_errors();
         echo form_open(base_url('c_employee_details/update_copier_registration'));
         echo form_input($copier_id);
+        echo form_input($is_client_value);
     ?>
 
     <div class="row">
         <div class="col-lg-4">
-        <h4>Password Information</h4>
-        <hr>
                 <div class="form-group">
             <?php
-                echo form_label('Sharp Password: ', $txt_sharp_password_data['name']);
-                echo form_input($txt_sharp_password_data);
-            ?>
-                </div> 
                 
-                <div class="form-group">
-            <?php         
-                    echo form_label('Other Password: ', $txt_other_password_data['name']);
-                    echo form_input($txt_other_password_data); 
+                echo form_checkbox($is_client);
+                echo form_label('Client / subcont ', $is_client['name']);
             ?>
-                </div>   
-        </div>
+                </div>
 
-        <div class="col-lg-4">
-            <h4>Employee Information</h4>
-            <hr>
                 <div class="form-group">
             <?php 
                     echo form_label('Employee ID: ', $idemployee_data['name']);
@@ -140,7 +167,7 @@
                 
                     <div class="input-group">
                         <span class="input-group-btn">
-                            <button type="button" class="btn btn-danger" data-toggle="modal" data-backdrop="static" data-target="#search_ldap_users">
+                            <button type="button" id="search_employee" class="btn btn-danger" data-toggle="modal" data-backdrop="static" data-target="#search_ldap_users">
                                 Search Employee
                             </button>
                         </span>
@@ -174,6 +201,13 @@
                 echo form_input($employee_email_data);
             ?>
                 </div> 
+
+                <div class="form-group">
+            <?php
+                echo form_label('Sharp Password: ', $txt_sharp_password_data['name']);
+                echo form_input($txt_sharp_password_data);
+            ?>
+                </div>
         </div>     
     </div>
 
@@ -224,15 +258,89 @@
 </div>
 
 <script>
-    $(document).ready(function(){
-        window.addEventListener('load', function() {
+    const txt_sharp_password = document.getElementById('txt_sharp_password');
+    window.addEventListener('load', function() {
+        const nameText =  document.getElementById('txt_email');
+        const emailText = document.getElementById('txt_email');
+        fieldArray = [nameText, txt_department, txt_position, emailText];
+        fieldArray.forEach(function (field) {
+            field.disabled = true;
+        });
+
+        const client = document.getElementById('client');
+        if (client.checked) {
+            document.getElementById('search_employee').disabled = true;
+            document.getElementById('txt_employeeid').disabled = true;
+        }
+    });
+
+    function getData(url, elementTarget) {
+        let xhttp = new XMLHttpRequest();
+        xhttp.open('GET', url, true);
+        xhttp.onreadystatechange = function() {
+            if(this.readyState == 4 && this.status == 200) {
+                const prevPassword = this.responseText;
+                if (prevPassword == '') {
+                    elementTarget.value = '10001';
+                } else {
+                    intPrevPassword = parseInt(prevPassword);
+                    passwordIncrement = intPrevPassword + 1;
+                    nextPassword = (intPrevPassword + 1).toString();
+                    elementTarget.value = nextPassword;
+                }
+            } 
+        }
+        xhttp.setRequestHeader('Content-Type',  'application/x-www-form-urlencoded');
+        xhttp.send();
+    }
+
+    document.addEventListener('click', function(event) {
+        if(event.target.parentElement.className === 'odd' || event.target.parentElement.className === 'even') {
+            row = event.target.parentElement;
+            const id = row.childNodes['1']
+            const name = row.childNodes['2'];
+            const department = row.childNodes['3'];
+            const position = row.childNodes['4'];
+            const email = row.childNodes['5'];
+
             const nameText =  document.getElementById('txt_email');
             const emailText = document.getElementById('txt_email');
-            fieldArray = [nameText, txt_department, txt_position, emailText];
-                fieldArray.forEach(function (field) {
-                    field.disabled = true;
-                });
-        });
+            const ldap_id = document.getElementById('txt_ldap_id');
+            const departmentValue = document.getElementById('txt_department');
+            const positionValue = document.getElementById('txt_position');
+
+            ldap_id.value = id.textContent;
+            nameText.value = name.textContent;
+            departmentValue.value = department.textContent;
+            positionValue.value = position.textContent;
+            emailText.value = email.textContent;
+
+            fieldArray = [nameText, txt_department, sel_position, emailText];
+            fieldArray.forEach(function (field) {
+                field.disabled = true;
+            });
+        }
+    });
+
+    
+
+    txt_sharp_password.addEventListener('keyup', function() {
+        if (this.value === '') {
+            txt_others_password.value = '';    
+        } else {
+            txt_others_password.value = this.value.substring(1);
+        }
+    });
+
+    client.addEventListener('click', function() {
+        if(this.checked) {
+            document.getElementById('search_employee').disabled = true;
+            document.getElementById('txt_employeeid').disabled = true;
+            document.getElementById('txt_employeeid').value = '';
+        }
+    });
+
+    $(document).ready(function(){
 
         $('#table_ldap_user_data').DataTable({
                 "createdRow": function(row, data, dataIndex) {
@@ -270,69 +378,5 @@
         });
     });
 
-    document.addEventListener('click', function(event) {
-            if(event.target.parentElement.className === 'odd' || event.target.parentElement.className === 'even') {
-                row = event.target.parentElement;
-                const id = row.childNodes['1']
-                const name = row.childNodes['2'];
-                const department = row.childNodes['3'];
-                const position = row.childNodes['4'];
-                const email = row.childNodes['5'];
-
-                const nameText =  document.getElementById('txt_email');
-                const emailText = document.getElementById('txt_email');
-                const ldap_id = document.getElementById('txt_ldap_id');
-                const departmentValue = document.getElementById('txt_department');
-                const positionValue = document.getElementById('txt_position');
-
-                ldap_id.value = id.textContent;
-                nameText.value = name.textContent;
-                departmentValue.value = department.textContent;
-                positionValue.value = position.textContent;
-                emailText.value = email.textContent;
-
-                fieldArray = [nameText, txt_department, sel_position, emailText];
-                fieldArray.forEach(function (field) {
-                    field.disabled = true;
-                });
-            }
-        })
-
-    const btnSearchEmployee = document.getElementById('btnSearchEmployee');
-    // btnSearchEmployee.addEventListener('click', function() {
-    //     window.open('<?= base_url('c_employee/get_employee_data') ?>', 'popuppage', 'width=700, location=0, toolbar=0, menubar=0, resizable=1, scrollbars=0, height=500, top=100, left=100')
-    // });
-
-    // const sel_dept = document.getElementById('sel_dept');
-    // const sel_position = document.getElementById('sel_position');
-
-    // sel_dept.addEventListener('change', function(e) {
-    //     const sel_dept_value = this.value;
-    //     const url = '<?= base_url('c_employee/department_position_dependent'); ?>';
-    //     dependentSelect("iddept="+sel_dept_value, url, sel_position);
-    // });
-
-    const txt_sharp_password = document.getElementById('txt_sharp_password');
-    const txt_others_password = document.getElementById('txt_other_password');
-
-    txt_sharp_password.addEventListener('keyup', function() {
-        if (this.value === '') {
-            txt_others_password.value = '';    
-        } else {
-            txt_others_password.value = this.value.substring(1);
-        }
-    });
-
-    // function dependentSelect(input, url, elementTarget) {
-    //     let xhttp = new XMLHttpRequest();
-    //     xhttp.open('POST', url, true);
-    //     xhttp.onreadystatechange = function() {
-    //         if (this.readyState == 4 && this.status == 200) {
-    //             let output = JSON.parse(this.responseText);
-    //             elementTarget.innerHTML = output;
-    //         }
-    //     }
-    //     xhttp.setRequestHeader('Content-Type',  'application/x-www-form-urlencoded');
-    //     xhttp.send(input);
-    // }
+    
 </script>
