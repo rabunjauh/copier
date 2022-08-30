@@ -53,17 +53,27 @@ class M_ldap_users extends CI_Model {
         return $this->db->count_all_results($this->table);
     }
 
+    public function getLdapUsers($email) {
+        return $this->db->get_where('ldap_users', ['ldap_email' => $email])->row();
+    }
+
 	public function save_ldap_user($ldap_user) {
-		$email = $ldap_user['ldap_email'];
-		$name = $ldap_user['name'];
-		$department = $ldap_user['department'];
-		$position = $ldap_user['position'];
-		$sql = "INSERT IGNORE INTO ldap_users(ldap_email, name, department, position) VALUES ('$email', '$name', '$department', '$position')";
-		$this->db->query($sql);
+        $this->db->insert('ldap_users', $ldap_user);
 		if ($this->db->affected_rows() == 1) {
             return $this->db->insert_id();
         }
 	}
+
+    public function update_ldap_user($ldap_user, $email) {
+        if ($email === 'raquel.dechavez' ) {
+            echo $ldap_user['position'];
+        }
+        $this->db->where('ldap_email', $email);
+        $this->db->update('ldap_users', $ldap_user);
+        if ($this->db->affected_rows() == 1) {
+            return $this->db->insert_id();
+        }
+    }
 
     public function get_ldap_tes() {
         return $this->db->get($this->table)->result();

@@ -707,14 +707,32 @@ class C_employee_details extends CI_Controller {
 	public function save_ldap_users($entries) {
 		foreach($entries as $entry) {
 			$ldap_user['ldap_email'] = $entry['samaccountname'][0];
-			$ldap_user['name'] = $entry['displayname'][0];
-			$department = $this->verify_department($entry['department'][0]);
-			// die;
-			$ldap_user['department'] = $department;
-			if(isset($entry['title'][0])) {
-				$ldap_user['position'] = $entry['title'][0];
+			$ldap_users = $this->m_ldap_users->getLdapUsers($ldap_user['ldap_email']);
+			if(!$ldap_users) {
+				$ldap_user['name'] = $entry['displayname'][0];
+				$department = $this->verify_department($entry['department'][0]);
+				$ldap_user['department'] = $department;
+				if(isset($entry['title'][0])) {
+					$ldap_user['position'] = $entry['title'][0];
+				}
+				$this->m_ldap_users->save_ldap_user($ldap_user);
+			} else {
+				
+				$ldap_user['name'] = $entry['displayname'][0];
+				$department = $this->verify_department($entry['department'][0]);
+				$ldap_user['department'] = $department;
+				if(isset($entry['title'][0])) {
+					$ldap_user['position'] = $entry['title'][0];
+				}
+				$this->m_ldap_users->update_ldap_user($ldap_user, $ldap_users->ldap_email);
 			}
-			$this->m_ldap_users->save_ldap_user($ldap_user);
+			// $ldap_user['name'] = $entry['displayname'][0];
+			// $department = $this->verify_department($entry['department'][0]);
+			// $ldap_user['department'] = $department;
+			// if(isset($entry['title'][0])) {
+			// 	$ldap_user['position'] = $entry['title'][0];
+			// }
+			// $this->m_ldap_users->save_ldap_user($ldap_user);
 		}
 	}
 	// public function save_ldap_users($entries, $department) {
@@ -730,7 +748,6 @@ class C_employee_details extends CI_Controller {
 	// }
 
 	public function verify_department ($department) {
-		var_dump($department);
 		if(
 			strpos($department, 'Engineering') !== false ||
 			strpos($department, 'engineering') !== false 
