@@ -13,7 +13,7 @@
             </button>
 		</div>
 	</div>	
-	<br>
+	<hr>
 	<div class="row">
 		<div class="col-lg-12">
             <table class="table table-bordered" id="registrationData">
@@ -147,9 +147,9 @@
                     {
                         data: 8,
                         render: function(data, type, full, meta) {
-                            const sendEmployeeDetailBtn = '<i class="fa fa-user fa-2x tooltips" data-registrationid=' + data + '></i>';
-                            const sendPrinterDetailBtn = '<i class="fa fa-print fa-2x tooltips" data-registrationid=' + data + '></i>';
-                            const modifyCopierRegisterBtn = '<i class="fa fa-edit fa-2x tooltips" data-registrationid=' + data + '></i>';
+                            const sendEmployeeDetailBtn = '<i class="fa fa-user tooltips" data-registrationid=' + data + '></i>';
+                            const sendPrinterDetailBtn = '<i class="fa fa-print tooltips" data-registrationid=' + data + '></i>';
+                            const modifyCopierRegisterBtn = '<i class="fa fa-edit tooltips" data-registrationid=' + data + '></i>';
                             return '<center?>' + sendEmployeeDetailBtn + '&nbsp;' +  sendPrinterDetailBtn + '&nbsp;' + modifyCopierRegisterBtn + ' </center>';
                         }
                     }
@@ -189,6 +189,35 @@
             window.location = '<?= base_url("c_employee_details/modify_copier_registration/") ?>' + e.target.dataset.registrationid;
         }
         
+    });
+
+    document.addEventListener("mouseover", function(e) {
+        
+        if (e.target.classList.contains('fa-user')) {
+            e.target.classList.toggle('fa-2x');
+        }
+
+        if (e.target.classList.contains('fa-print')) {
+            e.target.classList.toggle('fa-2x');
+        }
+
+        if (e.target.classList.contains('fa-edit')) {
+            e.target.classList.toggle('fa-2x');
+        }
+    });
+
+    document.addEventListener("mouseout", function(e) {
+        if (e.target.classList.contains('fa-user')) {
+            e.target.classList.toggle('fa-2x');
+        }
+        
+        if (e.target.classList.contains('fa-print')) {
+            e.target.classList.toggle('fa-2x');
+        }
+
+        if (e.target.classList.contains('fa-edit')) {
+            e.target.classList.toggle('fa-2x');
+        }
     });
 
     window.addEventListener('load', function(){

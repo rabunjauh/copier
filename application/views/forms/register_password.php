@@ -19,8 +19,7 @@
             'name' => 'txt_sharp_password',
             'id' => 'txt_sharp_password',
             'class' => 'form-control',
-            'placeholder' => 'Sharp Password',
-            'readonly' => 'true'
+            'placeholder' => 'Sharp Password'
         );
         
         $is_client = array(
@@ -196,7 +195,7 @@
                 </div>
         </div>
     </div>
-
+    <hr>
     <div class="row">
         <div class="col-lg-12">
             <div class="form-group">
@@ -204,6 +203,7 @@
                     echo form_submit($submit_data);
                     echo form_reset($reset);
                 ?>  
+                <a href="<?= base_url('c_user'); ?>" class="btn btn-info">Back</a>
             </div> 
         </div>      
     </div>

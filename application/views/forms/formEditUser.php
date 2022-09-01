@@ -25,9 +25,10 @@
 				<label for="txt_email">Email :</label>
 				<input type="text" name="txt_email" id="txt_email" class="form-control" value="<?= $user->email; ?>" placeholder="Email" required>
 			</div>
-
+			<hr>
 			<div class="form-group">
 				<button type="submit" name="btn_add_user" class="btn btn-primary">Save</button>
+				<a href="<?= base_url('c_user'); ?>" class="btn btn-info">Back</a>
 			</div>
 		<?php echo form_close(); ?>
 		</div>

@@ -259,6 +259,7 @@ class C_employee_details extends CI_Controller {
 	
     public function send_email_employee_details($id) {
 		$employee = $this->m_copier_registration->get_registration_by_id($id);
+		$admin = $this->m_user->get_users();
 		$this->load->library('email');
         $sender = 'no-reply@wascoenergy.com';
         $pass = 'password.88';
@@ -287,7 +288,9 @@ class C_employee_details extends CI_Controller {
 		$this->email->initialize($config);			
 		$this->email->from($sender, 'WEI MIS');
 		$this->email->to((($employee->ldap_id === null) ? $employee->email : $employee->ldap_email) . '@wascoenergy.com');
-		$this->email->cc('wahyu.maulana@wascoenergy.com, mustafa.m@wascoenergy.com, ichwan.maulana@wascoenergy.com');
+		foreach($admin as $adm) {
+			$this->email->cc($adm->email . '@wascoenergy.com');
+		}
 		$this->email->subject('Employee Details');
 		$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-to-Create-Timesheet.pdf");
 		$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-Input-Password-Printer-Sharp.pdf");
@@ -726,26 +729,8 @@ class C_employee_details extends CI_Controller {
 				}
 				$this->m_ldap_users->update_ldap_user($ldap_user, $ldap_users->ldap_email);
 			}
-			// $ldap_user['name'] = $entry['displayname'][0];
-			// $department = $this->verify_department($entry['department'][0]);
-			// $ldap_user['department'] = $department;
-			// if(isset($entry['title'][0])) {
-			// 	$ldap_user['position'] = $entry['title'][0];
-			// }
-			// $this->m_ldap_users->save_ldap_user($ldap_user);
 		}
 	}
-	// public function save_ldap_users($entries, $department) {
-	// 	foreach($entries as $entry) {
-	// 		$ldap_user['ldap_email'] = $entry['samaccountname'][0];
-	// 		$ldap_user['name'] = $entry['displayname'][0];
-	// 		$ldap_user['department'] = $department;
-	// 		if(isset($entry['title'][0])) {
-	// 			$ldap_user['position'] = $entry['title'][0];
-	// 		}
-	// 		$this->m_ldap_users->save_ldap_user($ldap_user);
-	// 	}
-	// }
 
 	public function verify_department ($department) {
 		if(
@@ -860,9 +845,6 @@ class C_employee_details extends CI_Controller {
 	}
 	public function get_ldap_users() {
 		$ldap_users = $this->m_ldap_users->get_ldap_users();
-		// var_dump($this->m_ldap_users->count_filtered_data());
-		// var_dump($this->m_ldap_users->count_all_data());die;
-		// var_dump($ldap_users);die;
 		$no = $_POST['start'];
 		foreach ($ldap_users as $ldap_user) {
 			$row =  array();

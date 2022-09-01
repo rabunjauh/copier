@@ -8,7 +8,7 @@
 		echo validation_errors();
 	?>
 	<div class="row">
-		<div class="col-lg-6">
+		<div class="col-lg-4">
 			<?php echo form_open(base_url() . 'c_user/add_user'); ?>
 			<div class="form-group">
 				<label for="txt_name">Employee Name :</label>
@@ -24,6 +24,11 @@
 				<label for="txt_email">Email :</label>
 				<input type="text" name="txt_email" id="txt_email" class="form-control" placeholder="Email" required>
 			</div>
+		</div>
+		
+		
+		<div class="col-lg-4">
+			<?php echo form_open(base_url() . 'c_user/add_user'); ?>
 
 			<div class="form-group">
 				<label for="txt_password">Password :</label>
@@ -34,11 +39,17 @@
 				<label for="txt_confirm_password">Confirm Password :</label>
 				<input type="password" name="txt_confirm_password" class="form-control" placeholder="Confirm Password" required>
 			</div>
-
-			<div class="form-group">
-				<button type="submit" name="btn_add_user" class="btn btn-primary">Save</button>
-			</div>
-		<?php echo form_close(); ?>
 		</div>
 	</div>
+	<hr>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="form-group">
+					<button type="submit" name="btn_add_user" class="btn btn-primary">Save</button>
+					<button type="reset" name="reset" class="btn btn-success">Reset</button>
+					<a href="<?= base_url('c_user'); ?>" class="btn btn-info">Back</a>
+				</div>
+			</div>
+	</div>
+	<?php echo form_close(); ?>
 </div>

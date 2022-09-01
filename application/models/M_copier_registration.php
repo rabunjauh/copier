@@ -39,7 +39,7 @@ class m_copier_registration extends CI_Model {
             $this->db->or_like('tp.positiondesc', $_POST['search']['value']);
             $this->db->or_like('c.email', $_POST['search']['value']);
             $this->db->or_like('c.sharp_password', $_POST['search']['value']);
-            $this->db->or_like('c.sharp_password', $_POST['search']['value']);
+            $this->db->or_like('c.others_password', $_POST['search']['value']);
             $this->db->or_like('l.ldap_email', $_POST['search']['value']);
             $this->db->or_like('l.name', $_POST['search']['value']);
             $this->db->or_like('l.department', $_POST['search']['value']);

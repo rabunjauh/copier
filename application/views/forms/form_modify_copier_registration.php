@@ -210,13 +210,14 @@
                 </div>
         </div>     
     </div>
-
+    <hr>
     <div class="row">
         <div class="col-lg-12">
             <div class="form-group">
                 <?php
                     echo form_submit($submit_data);
-                ?>  
+                    ?>  
+                    <a href="<?= base_url('c_employee_details'); ?>" class="btn btn-info">Back</a>
             </div> 
         </div>      
     </div>

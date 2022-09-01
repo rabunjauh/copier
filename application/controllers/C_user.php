@@ -49,6 +49,38 @@ class C_user extends CI_Controller {
 		$this->load->view('main', $data);
 	}
 
+	public function get_ldap_users_admin() {
+		$ldap_users = $this->m_user->get_ldap_users_admin();
+		$no = $_POST['start'];
+		foreach ($ldap_users as $ldap_user) {
+			$row =  array();
+			$row[] = ++$no;
+			$row[] = $ldap_user->id;
+			$row[] = $ldap_user->name;
+			$row[] = $ldap_user->department;
+			$row[] = $ldap_user->position;
+			$row[] = $ldap_user->ldap_email;
+			$data[] = $row;
+		}
+
+		if (isset($data)) {
+			$output = array(
+				"draw" => $_POST['draw'],
+				"recordsTotal" => $this->m_user->count_all_data(),
+				"recordsFiltered" => $this->m_user->count_filtered_data(),
+				"data" => $data
+			);
+		} else {
+			$output = array(
+				"draw" => $_POST['draw'],
+				"recordsTotal" => $this->m_user->count_all_data(),
+				"recordsFiltered" => $this->m_user->count_filtered_data(),
+				"data" => array()
+			);
+		}
+		$this->output->set_content_type('application/json')->set_output(json_encode($output));
+	}
+
 	public function add_user(){
 		if ( $this->input->post() ){
 			$this->load->library('form_validation');
@@ -160,6 +192,40 @@ class C_user extends CI_Controller {
 			$message = '<div class="alert alert-danger">User delete failed!</div>';
             $this->session->set_flashdata('message', $message);
             redirect(base_url('c_user'));
+		}
+	}
+
+	public function check($id) {
+		$user = $this->m_user->getUserByID($id);
+		if($user->status === '0') {
+			// $this->m_user->check_user($id);
+			if ($this->m_user->check_user($id)) {
+				$message = '<div class="alert alert-success">User '. $user->username . ' status changed!</div>';
+				$this->session->set_flashdata('message', $message);
+				redirect(base_url('c_user'));
+			} else {
+				$message = '<div class="alert alert-danger">Change user '. $user->username . ' status failed!</div>';
+				$this->session->set_flashdata('message', $message);
+				redirect(base_url('c_user'));
+			}
+		} else {
+			if ($this->m_user->uncheck_user($id)) {
+				$message = '<div class="alert alert-success">User '. $user->username . ' status changed!</div>';
+				$this->session->set_flashdata('message', $message);
+				redirect(base_url('c_user'));
+			} else {
+				$message = '<div class="alert alert-danger">Change user '. $user->username . 'status failed!</div>';
+				$this->session->set_flashdata('message', $message);
+				redirect(base_url('c_user'));
+			}
+		}
+		
+	}
+
+	public function uncheck($id) {
+		$user = $this->m_user->getUserByID($id);
+		if($user->status === '1') {
+			$this->m_user->uncheck_user($id);
 		}
 	}
 }
