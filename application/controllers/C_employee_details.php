@@ -30,6 +30,10 @@ class C_employee_details extends CI_Controller {
 
 	public function get_registration_data() {
 		$copier_registrations = $this->m_copier_registration->get_registration_data();
+		// echo $this->db->last_query();
+		// var_dump($copier_registrations);
+		// var_dump($this->m_copier_registration->count_all_registration_data());
+		// var_dump($this->m_copier_registration->count_filtered_registration_data());
 		$no = $_POST['start'];
 		foreach ($copier_registrations as $copier_registration) {
 			if ($copier_registration->ldap_id === null || $copier_registration->name === null){
@@ -149,11 +153,12 @@ class C_employee_details extends CI_Controller {
 					$form_info['txt_employee_name'] = $this->input->post('txt_employee_name', TRUE);
 					$form_info['iddept'] = $form_info['client'];
 					$form_info['txt_idemployee'] = null;
+					$form_info['isclient'] = 1;
 				} else {
 					$form_info['ldap_id'] = $this->input->post('txt_ldap_id', TRUE);
 					$form_info['txt_employee_name'] = null;
 					$form_info['iddept'] = null;
-					
+					$form_info['isclient'] = null;
 					$form_info['txt_idemployee'] = $this->input->post('txt_idemployee');
 				}
 
@@ -214,11 +219,13 @@ class C_employee_details extends CI_Controller {
 				$form_info['txt_employeename'] = $this->input->post('txt_employeename', TRUE);
 				$form_info['iddept'] = $form_info['client'];
 				$form_info['txt_idemployee'] = null;
+				$form_info['isclient'] = 1;
 			} else {
 				$form_info['ldap_id'] = $this->input->post('txt_ldap_id', TRUE);
 				$form_info['txt_employee_name'] = null;
 				$form_info['iddept'] = null;
 				$form_info['txt_employeeid'] = $this->input->post('txt_employeeid', TRUE);
+				$form_info['isclient'] = null;
 			}
 			if ($this->m_copier_registration->update_register($form_info, $id)) {
 				$message = '<div class="alert alert-success">Success</div>';
@@ -875,6 +882,7 @@ class C_employee_details extends CI_Controller {
 		}
 		$this->output->set_content_type('application/json')->set_output(json_encode($output));
 	}
+
 
 }
 

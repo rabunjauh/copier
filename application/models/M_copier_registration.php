@@ -21,9 +21,7 @@ class m_copier_registration extends CI_Model {
             l.department,
             l.position
         ');
-        $this->db->where_not_in('c.iddept', 22);
-        $this->db->where_not_in('c.iddept', 23);
-        $this->db->or_where('c.ldap_id !=', null);
+        $this->db->where('is_client', null);
 
 
         $this->db->join('tblfile_department td', 'td.iddept = c.iddept', 'left');
@@ -52,6 +50,7 @@ class m_copier_registration extends CI_Model {
         } else {
             $this->db->order_by('c.sharp_password', 'DESC');
         }
+        
     }
     
     public function get_registration_data() {
@@ -60,6 +59,7 @@ class m_copier_registration extends CI_Model {
         if ($_POST['length'] != 1) {
             $this->db->limit($_POST['length'], $_POST['start']);
         }
+        
         return $this->db->get('copier_id c')->result();
    }
 
@@ -251,6 +251,7 @@ class m_copier_registration extends CI_Model {
 		$info['idposition'] = html_escape($input['txt_idposition']);
 		$info['employeename'] = html_escape($input['txt_employee_name']);
 		$info['ldap_id'] = html_escape($input['ldap_id']);
+		$info['is_client'] = html_escape($input['isclient']);
 		$this->db->insert('copier_id', $info);
 		if ($this->db->affected_rows() == 1) {
 			return TRUE;
@@ -266,6 +267,7 @@ class m_copier_registration extends CI_Model {
 		$info['sharp_password'] = html_escape($input['txt_sharp_password']);
 		$info['others_password'] = html_escape($input['txt_others_password']);
 		$info['ldap_id'] = html_escape($input['ldap_id']);
+        $info['is_client'] = html_escape($input['isclient']);
         $this->db->where('id', $id);
 		$this->db->update('copier_id', $info);
 		if ($this->db->affected_rows() == 1) {
@@ -295,7 +297,7 @@ class m_copier_registration extends CI_Model {
         ');
         $this->db->join('tblfile_department td', 'td.iddept = c.iddept', 'left');
         $this->db->join('tblfile_position tp', 'tp.idposition = c.idposition', 'left');
-        $this->db->where('td.iddept', 22);
+        $this->db->where('is_client', 1);
         $this->db->order_by('c.sharp_password', 'DESC');
         return $this->db->get('copier_id c')->result();
     }
