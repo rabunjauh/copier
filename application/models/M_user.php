@@ -72,7 +72,8 @@ class m_user extends CI_Model {
     }
 
 	public function get_users() {
-		return $this->db->where('status', 1)->get('user')->result();
+		$this->db->where('status', 1);
+		return $this->db->get('user')->result();
 	}
 
 	public function count_user(){
@@ -179,13 +180,6 @@ class m_user extends CI_Model {
 			return FALSE;
 		}
 	}
-
-	
-
-	// public function get_users($username) {
-	// 	$this->db->where_not_in('username', $username);
-	// 	return $this->db->get('user')->result();
-	// }
 
 	public function delete_user($employeeID) {
 		$this->db->where('id', $employeeID);

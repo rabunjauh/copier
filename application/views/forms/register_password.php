@@ -256,7 +256,7 @@
 
         fieldArray = [departmentValue, positionValue, emailText];
         fieldArray.forEach(function (field) {
-            field.disabled = true;
+            field.readOnly = true;
         });
 
         const client = document.getElementById('client');
@@ -320,7 +320,7 @@
 
             fieldArray = [nameText, departmentValue, positionValue, emailText];
             fieldArray.forEach(function (field) {
-                field.disabled = true;
+                field.readOnly = true;
             });
         }
     })

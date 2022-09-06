@@ -19,7 +19,7 @@
             <table class="table table-bordered" id="registrationData">
                 <thead>
                     <tr>
-                         <th>No</th>
+                        <th>No</th>
                         <th>Employee ID</th>
                         <th>Sharp Password</th>
                         <th>Others Password</th>
@@ -37,6 +37,12 @@
             <!-- <?php echo $this->pagination->create_links(); ?> -->
 	    </div>
 	</div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <button id="button_send_email" name="button_send_email" class="btn btn-primary">Send Email</button>
+        </div>
+    </div>
 </div>	
 
  <!-- Modal -->
@@ -147,27 +153,11 @@
                     {
                         data: 8,
                         render: function(data, type, full, meta) {
-                            const sendEmployeeDetailBtn = '<i class="fa fa-user fa-2x tooltips" data-registrationid=' + data + '></i>';
-                            const sendPrinterDetailBtn = '<i class="fa fa-print fa-2x tooltips" data-registrationid=' + data + '></i>';
-                            const modifyCopierRegisterBtn = '<i class="fa fa-edit fa-2x tooltips" data-registrationid=' + data + '></i>';
-                            return '<center?>' + sendEmployeeDetailBtn + '&nbsp;' +  sendPrinterDetailBtn + '&nbsp;' + modifyCopierRegisterBtn + ' </center>';
+                            const row_check = '<input type="checkbox" id="row" name="row" value="' + data + '">';
+                            return row_check;
+                            // return '<center?>' + sendEmployeeDetailBtn + '&nbsp;' +  sendPrinterDetailBtn + '&nbsp;' + modifyCopierRegisterBtn + ' </center>';
                         }
                     }
-                    // {
-                    //     data: null,
-                    //     render: function(data, type, full, meta) {
-                    //         const sendPrinterDetail = '<i class="fa fa-print btn btn-primary"></i>';
-                    //         return '<center?>' + sendPrinterDetail + '</center>';
-                    //     }
-                    // }
-                    // {
-                    //     data: null,
-                    //     render: function(data, type, full, meta) {
-                    //         const modifyCopierRegister = '<i class="fa fa-edit btn btn-primary"></i>';
-                    //         return '<center?>' + modifyCopierRegister + '</center>';
-                    //     }
-
-                    // }
                 ]
         });
     });

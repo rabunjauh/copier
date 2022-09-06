@@ -3,6 +3,8 @@ require 'vendor/autoload.php';
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
+use function PHPSTORM_META\map;
+
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class C_employee_details extends CI_Controller {
@@ -12,6 +14,7 @@ class C_employee_details extends CI_Controller {
 		$this->load->model('m_user');
 		$this->load->model('m_employee');
 		$this->load->model('m_ldap_users');
+		$this->load->model('m_copier_registration');
 		if ( !$this->session->userdata('username') ){
 			redirect(base_url(). 'login');
 		}	
@@ -47,6 +50,7 @@ class C_employee_details extends CI_Controller {
 				$positiondesc = $copier_registration->position;
 				$email = $copier_registration->ldap_email;
 			}
+			$id = $copier_registration->id;
 			$row =  array();
 			$row[] = ++$no;
 			$row[] = $copier_registration->idemployee;
@@ -56,7 +60,7 @@ class C_employee_details extends CI_Controller {
 			$row[] = $deptdesc;
 			$row[] = $positiondesc;
 			$row[] = $email;
-			$row[] = $copier_registration->id;
+			$row[] = $id;
 			$data[] = $row;
 		}
 
@@ -140,9 +144,13 @@ class C_employee_details extends CI_Controller {
 
     public function register_password() {
 		if ($this->input->post()) {
+			// var_dump($this->input->post());die;
 			$this->load->library('form_validation');
 			$this->form_validation->set_rules('txt_sharp_password', 'Sharp Password', 'is_unique[copier_id.sharp_password]');
 			$this->form_validation->set_rules('txt_idemployee', 'Employee ID', 'is_unique[copier_id.idemployee]');
+			if(!$this->input->post('txt_employee_email')) {
+				$this->form_validation->set_rules('client', 'Client Checkbox', 'required');
+			}
 
 			if ($this->form_validation->run()) {
 				$form_info['client'] = $this->input->post('client', TRUE);
@@ -163,6 +171,7 @@ class C_employee_details extends CI_Controller {
 				}
 
 				$form_info['txt_idposition'] = null;
+				
 				if ($this->m_copier_registration->save_register($form_info)) {
 					$message = '<div class="alert alert-success">Success</div>';
 					$this->session->set_flashdata('message', $message);
@@ -295,15 +304,24 @@ class C_employee_details extends CI_Controller {
 		$this->email->initialize($config);			
 		$this->email->from($sender, 'WEI MIS');
 		$this->email->to((($employee->ldap_id === null) ? $employee->email : $employee->ldap_email) . '@wascoenergy.com');
-		foreach($admin as $adm) {
-			$this->email->cc($adm->email . '@wascoenergy.com');
+		
+		$is_cc = [];
+		foreach ($admin as $list) {
+			$is_cc[] = $list->email;
 		}
+
+		function modify($str) {
+			return $str . '@wascoenergy.com';
+		}
+
+		$list_admin = array_map('modify', $is_cc);
+		$this->email->cc(join(", ", $list_admin));
+		// $this->email->cc('wahyu.maulana@wascoenergy.com, ichwan.maulana@wascoenergy.com, mustafa.m@wascoenergy.com');
 		$this->email->subject('Employee Details');
 		$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-to-Create-Timesheet.pdf");
 		$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-Input-Password-Printer-Sharp.pdf");
 		$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-Scan-Doc-Machine-Printer-Sharp.pdf");
 		$this->email->message($this->load->view('contents/message_body', $data, TRUE));
-		// var_dump($this->email);die;
 		if ($this->email->send()) {
 			$message = '<div class="alert alert-success">Employee Details sent to ' . $data['recipient'] . ' successfully</div>';
             $this->session->set_flashdata('message', $message);
@@ -316,6 +334,7 @@ class C_employee_details extends CI_Controller {
 	}
 	
     public function send_email_sharp_details($id) {
+		$admin = $this->m_user->get_users();
 		$this->load->library('email');
         $sender = 'no-reply@wascoenergy.com';
         $pass = 'password.88';
@@ -345,7 +364,20 @@ class C_employee_details extends CI_Controller {
 
 		$this->email->from($sender, 'WEI MIS');
 		$this->email->to((($employee->ldap_id === null) ? $employee->email : $employee->ldap_email) . '@wascoenergy.com');
-		$this->email->cc('wahyu.maulana@wascoenergy.com, mustafa.m@wascoenergy.com, ichwan.maulana@wascoenergy.com');
+
+		$is_cc = [];
+		foreach ($admin as $list) {
+			$is_cc[] = $list->email;
+		}
+
+		function modifying($str) {
+			return $str . '@wascoenergy.com';
+		}
+
+		$list_admin = array_map('modifying', $is_cc);
+		$this->email->cc(join(", ", $list_admin));
+
+		// $this->email->cc('wahyu.maulana@wascoenergy.com, mustafa.m@wascoenergy.com, ichwan.maulana@wascoenergy.com');
 		$this->email->subject('Sharp Printer Details');
       		$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-to-Create-Timesheet.pdf");
 		$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-Input-Password-Printer-Sharp.pdf");
@@ -883,6 +915,38 @@ class C_employee_details extends CI_Controller {
 		$this->output->set_content_type('application/json')->set_output(json_encode($output));
 	}
 
+	public function update_copier() {
+		$copiers = $this->m_copier_registration->get_existing_copier();
+		foreach($copiers as $copier) {
+			$existing_email = $copier->email;
+			echo "Existing email: " . $existing_email;
+			echo "</>";
+			$ldap_users = $this->m_ldap_users->getLdapUsers($existing_email);
+			if($ldap_users) {
+				$duplicate = $this->m_ldap_users->get_duplicate();
+				if ($duplicate) {
+					foreach($duplicate as $value) {
+						$oldest = $this->m_ldap_users->get_old_duplicate($value->email);
+						$oldest_data_id = $oldest['email'];
+						echo "oldest: " . $oldest_data_id;
+						echo "</br>";
+					}
+				}
+				$ldap_id = $ldap_users->id;
+				// $this->m_copier_registration->update_copier_data($existing_email, $ldap_id, $oldest_data_id);
+			}
+		}
+		// $double = $this->m_ldap_users->get_double();
+		// foreach($double as $value) {
+		// 	$newest = $this->m_ldap_users->get_latest_double($value->email);
+		// 	$ldap_data = $this->m_ldap_users->get_ldap_data($value->email);
+		// 	$newest_data_id = $newest['id'];
+		// 	$ldap_data_id = $ldap_data['id'];
+
+		// 	$this->m_ldap_users->update_copier_double($ldap_data_id, $newest_data_id);
+		// }
+		
+	}
 
 }
 

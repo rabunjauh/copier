@@ -301,4 +301,25 @@ class m_copier_registration extends CI_Model {
         $this->db->order_by('c.sharp_password', 'DESC');
         return $this->db->get('copier_id c')->result();
     }
+
+    public function get_existing_copier() {
+        return $this->db->get('copier_id')->result();
+    }
+
+    public function update_copier_data($email, $id, $oldest = null) {
+        
+        $data =  [
+            'ldap_id' => $id
+        ];
+
+        if($oldest) {
+            $this->db->where_not_in('email', $oldest);
+        }
+        
+        $this->db->where('email', $email);
+        $this->db->update('copier_id', $data);
+        if ($this->db->affected_rows() == 1) {
+            return $this->db->insert_id();
+        }
+    }
 }

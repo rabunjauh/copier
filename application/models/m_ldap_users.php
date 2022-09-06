@@ -78,5 +78,25 @@ class M_ldap_users extends CI_Model {
     public function get_ldap_tes() {
         return $this->db->get($this->table)->result();
     }
+
+    public function get_duplicate() {
+        $query = $this->db->query('SELECT email, COUNT(email) FROM copier_id GROUP BY email HAVING COUNT(email) > 1');
+
+        return $query->result();
+    }
+
+    public function get_old_duplicate($email) {
+        $this->db->where('email', $email);
+        $this->db->limit(1);
+        $this->db->order_by('id', 'ASC');
+        return $this->db->get('copier_id')->row_array();
+    }
+
+    public function get_ldap_data($email) {
+        $this->db->where('ldap_email', $email);
+        return $this->db->get('ldap_users')->row_array();
+    }
+
+    
 }
-?>
+?> 
