@@ -28,6 +28,7 @@
                         <th>Department</th>
                         <th>Job Title</th>
                         <th>Email</th>
+                        <th>Edit</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -98,7 +99,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Verify Recipients</h4>
+        <h4 class="modal-title" id="myModalLabel"><span  class="label label-warning">Are you sure to send email to below users?<span></span></h4>
       </div>
       <div class="modal-body">
       <table class="table table-bordered" id="verify_email_data">
@@ -181,9 +182,8 @@
                 'select': {
                     'style': 'multi',
                 },
-                'order': [[1, 'asc']],
+                'order': [[2, 'desc']],
                 columns: [
-                    
                     {
                         data: 0
                     },
@@ -210,28 +210,17 @@
                     },
                     {
                         data: 8
+                    },
+                    {
+                        data: 9,
+                        render: function(data, type, full, meta) {
+                            return `<a href="<?= base_url('c_employee_details/modify_copier_registration/') ?>${data}">
+                                <i class="fa fa-edit fa-2x tooltips"></i>
+                            </a>`;
+                        }
                     }
                 ],
         });
-    });
-
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('fa-user')) {
-           if (confirm('Send Employee Details?')) {
-               window.location = '<?= base_url("c_employee_details/send_email_employee_details/") ?>' + e.target.dataset.registrationid;
-           }
-        }
-
-        if (e.target.classList.contains('fa-print')) {
-            if (confirm('Send Printer Details?')) {
-                window.location = '<?= base_url("c_employee_details/send_email_sharp_details/") ?>' + e.target.dataset.registrationid;
-            }
-        }
-
-        if (e.target.classList.contains('fa-edit')) {
-            window.location = '<?= base_url("c_employee_details/modify_copier_registration/") ?>' + e.target.dataset.registrationid;
-        }
-        
     });
 
     window.addEventListener('load', function(){

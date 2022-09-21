@@ -6,15 +6,6 @@
     </div>
 
     <?php 
-        // $txt_other_password_data = array(
-        //     'type' => 'text',
-        //     'name' => 'txt_other_password',
-        //     'id' => 'txt_other_password',
-        //     'class' => 'form-control',
-        //     'value'  => $copier_registration->others_password,
-        //     'placeholder' => 'Other Password'
-        // );
-
         if($copier_registration->iddept === '22') {
 
             $is_client = array(
@@ -69,13 +60,11 @@
             'value'  => $copier_registration->idemployee
         );
 
-        // $employeename = ($copier_registration->ldap_id === null ) ? $copier_registration->employeename : $copier_registration->name;
         $employeename_data = array(
             'type' => 'text',
             'name' => 'txt_employeename',
             'id' => 'txt_employeename',
             'class' => 'form-control',
-            // 'value'  => $employeename
             'value'  => ($copier_registration->ldap_id === null ) ? $copier_registration->employeename : $copier_registration->name
         );
         
@@ -94,16 +83,6 @@
             'class' => 'form-control',
             'value'  => ($copier_registration->ldap_id === null ) ? $copier_registration->positiondesc : $copier_registration->position
         );
-
-        // $dept_options[0] = 'Department';
-        // foreach($departments as $department) {
-        //     $dept_options[$department->iddept] = $department->deptdesc;
-        // }
-
-        // $position_options[0] = 'Position';
-        // foreach($positions as $position) {
-        //     $position_options[$position->idposition] = $position->positiondesc;
-        // }
 
         $employee_email_data = array(
             'type' => 'text',
@@ -182,8 +161,6 @@
             <?php
                 echo form_label('Department: ', 'sel_dept');
                 echo form_input($employee_department_data); 
-                // echo form_dropdown('sel_dept', $dept_options, 7, 'id="sel_dept" class="form-control"');
-                // echo form_dropdown('sel_dept', $dept_options, $copier_registration->iddept, 'id="sel_dept" class="form-control"');
             ?>
                 </div>  
                 
@@ -191,7 +168,6 @@
             <?php
                 echo form_label('Position: ', 'sel_position');
                 echo form_input($employee_position_data); 
-                // echo form_dropdown('sel_position', $position_options, $copier_registration->idposition, 'id="sel_position" class="form-control"');
             ?>
                 </div>  
                 

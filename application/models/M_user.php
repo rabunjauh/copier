@@ -82,30 +82,6 @@ class m_user extends CI_Model {
 		return $count;
 	}
 
-	// public function user_list($limit, $offset){
-	//     $sql = "SELECT * FROM user";
-
-	//     // $sql = "SELECT tblmas_employee.idemployee, tblmas_employee.employeeno, tblmas_employee.employeename, tblfile_department.deptdesc, tblfile_position.positiondesc, tblfile_position.level 
-	//    	// 		FROM tblmas_employee 
-	//     // 		LEFT JOIN tblfile_department 
-	//     // 		ON tblmas_employee.iddept = tblfile_department.iddept 
-	//     // 		LEFT JOIN tblfile_position 
-	//     // 		ON tblmas_employee.idposition = tblfile_position.idposition 
-	//     // 		WHERE tblmas_employee.employeename like '%hidayat%'
-	//     // 		ORDER BY tblmas_employee.idemployee DESC";
-
-	//     if ($limit) {
-	//       if(!$offset){
-	//         $sql .= " LIMIT $limit";
-	//       }else{
-	//         $sql .= " LIMIT $limit OFFSET $offset";
-	//       }
-	//     }
-	    
-	//     $query = $this->db->query($sql);
-	//     return $query->result();
-  	// }
-	
 	public function user_list($limit, $offset){
 	    if ($limit) {
 	    	if(!$offset){
@@ -122,24 +98,6 @@ class m_user extends CI_Model {
 		$info['name'] = strtolower(stripslashes($input['name']));
 		$info['username'] = strtolower(stripslashes($input['username']));
 		$info['email'] = strtolower(stripslashes($input['email']));
-		// $info['password'] = $input['password'];
-		// $confirm_password = $input['confirm_password'];
-		// $username = $info['username'];
-		
-		// $sql = "SELECT username FROM user WHERE username = '$username'";
-		// $query = $this->db->query($sql)->num_rows();
-		// if ( $query ){
-		// 	$message = '<div class="alert alert-danger">Username already exist!</div>';
-        // 	$this->session->set_flashdata('message', $message);	
-		// 	return false;
-		// } 
-
-		// if ( $confirm_password !== $info['password'] ){
-		// 	$message = '<div class="alert alert-danger">Password did not match!</div>';
-        // 	$this->session->set_flashdata('message', $message);	
-		// 	return false;
-		// }
-
 		$info['password'] = sha1($info['password']);
 
 		$this->db->insert('user', $info);

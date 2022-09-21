@@ -187,8 +187,6 @@ class m_copier_registration extends CI_Model {
             return FALSE;
         }
     }
-    
-    
 
     public function get_new_employee() {
         $this->db->where('email !=', '');
@@ -212,18 +210,6 @@ class m_copier_registration extends CI_Model {
         return $this->db->get('copier_id')->row();
     }
 
-    // public function count_wasco_fingerman_employee() {
-    //     $this->db->select('idemployee');
-    //     $this->db->from('tblmas_employee');
-    //     return $this->db->count_all_results();
-    // }
-    
-    // public function count_copier_employee() {
-    //     $this->db->select('idemployee');
-    //     $this->db->from('copier.tblmas_employee');
-    //     return $this->db->count_all_results();
-    // }
-    
     public function count_table($col, $db, $table_name) {
         $this->db->select($col);
         $this->db->from($db . '.' . $table_name);
@@ -318,10 +304,6 @@ class m_copier_registration extends CI_Model {
             'ldap_id' => $id
         ];
 
-        // if($oldest) {
-            // $this->db->where_not_in('id', $oldest);
-        // }
-        
         $this->db->where('email', $email);
         $this->db->update('copier_id', $data);
         if ($this->db->affected_rows() == 1) {

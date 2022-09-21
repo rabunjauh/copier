@@ -2,10 +2,6 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class M_ldap_users extends CI_Model {
-    // public function get_ldap_users() {
-	// 	return $this->db->get('ldap_users')->result();
-	// }
-
     var $table = 'ldap_users';
     var $column_order = array(null, 'name', 'department', 'position', 'ldap_email', 'id');
     var $order = array(null, 'name', 'department', 'position', 'email', 'id');
@@ -96,7 +92,5 @@ class M_ldap_users extends CI_Model {
         $this->db->where('ldap_email', $email);
         return $this->db->get('ldap_users')->row_array();
     }
-
-    
 }
 ?> 

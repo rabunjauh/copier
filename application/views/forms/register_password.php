@@ -6,14 +6,6 @@
     </div>
 
     <?php 
-        // $other_password_data = array(
-        //     'type' => 'text',
-        //     'name' => 'txt_others_password',
-        //     'id' => 'txt_others_password',
-        //     'class' => 'form-control',
-        //     'placeholder' => 'Others Password'
-        // );
-
         $sharp_password_data = array(
             'type' => 'text',
             'name' => 'txt_sharp_password',
@@ -45,14 +37,6 @@
             'placeholder' => 'Employee Name'
         );
 
-        // $employee_iddept_data = array(
-        //     'type' => 'hidden',
-        //     'name' => 'txt_employee_iddept',
-        //     'id' => 'txt_employee_iddept',
-        //     'class' => 'form-control',
-        //     'placeholder' => 'Department'
-        // );
-        
         $employee_department_desc_data = array(
             'type' => 'text',
             'name' => 'txt_employee_department',
@@ -60,14 +44,6 @@
             'class' => 'form-control',
             'placeholder' => 'Department'
         );
-        
-        // $employee_position_id_data = array(
-        //     'type' => 'hidden',
-        //     'name' => 'txt_employee_idposition',
-        //     'id' => 'txt_employee_idposition',
-        //     'class' => 'form-control',
-        //     'placeholder' => 'Job Title'
-        // );
         
         $employee_position_desc_data = array(
             'type' => 'text',
@@ -77,16 +53,6 @@
             'placeholder' => 'Job Title'
         );
 
-        // $dept_options[0] = 'Department';
-        // foreach($departments as $department) {
-        //     $dept_options[$department->iddept] = $department->deptdesc;
-        // }
-
-        // $position_options[0] = 'Position';
-        // foreach($positions as $position) {
-        //     $position_options[$position->idposition] = $position->positiondesc;
-        // }
-        
         $employee_email_data = array(
             'type' => 'text',
             'name' => 'txt_employee_email',
@@ -142,32 +108,24 @@
                 echo form_label('Name: ', $employee_name_data['name']);
             ?>
 
-            <div class="input-group">
-                <span class="input-group-btn">
-                    <button type="button" id="search_employee" class="btn btn-danger" data-toggle="modal" data-backdrop="static" data-target="#search_ldap_users">
-                        Search Employee
-                    </button>
-                </span>
-                <?php
-                    echo form_input($employee_name_data);
-                ?>
-            </div>
-                </div>  
+                <div class="input-group">
+                    <span class="input-group-btn">
+                        <button type="button" id="search_employee" class="btn btn-danger" data-toggle="modal" data-backdrop="static" data-target="#search_ldap_users">
+                            Search Employee
+                        </button>
+                    </span>
+            <?php
+                        echo form_input($employee_name_data);
+            ?>
+                </div>
+            </div>  
 
             
             
                 <div class="form-group">
             <?php
-                // echo form_label('Name: ', $employee_name_data['name']);
-                // echo form_input($employee_name_data);
-            ?>
-                </div> 
-                <div class="form-group">
-            <?php
                 echo form_label('Department: ', 'sel_dept');
                 echo form_input($employee_department_desc_data);
-                // echo form_input($employee_iddept_data);
-                // echo form_dropdown('sel_dept', $dept_options, 'Department', 'id="sel_dept" class="form-control"');
             ?>
                 </div>  
                 
@@ -175,8 +133,6 @@
             <?php
                 echo form_label('Position: ', 'sel_position');
                 echo form_input($employee_position_desc_data);
-                // echo form_dropdown('sel_position', $position_options, 'Position', 'id="sel_position" class="form-control"');
-                // echo form_input($employee_position_id_data);
             ?>
                 </div>  
                 
@@ -264,12 +220,9 @@
             if (this.checked) {
                 document.getElementById('search_employee').disabled = true;
                 document.getElementById('txt_idemployee').disabled = true;
-                // txt_sharp_password.value = '';
             } else {
                 document.getElementById('search_employee').disabled = false;
                 document.getElementById('txt_idemployee').disabled = false;
-                
-                // getData('get_last_sharp_password', txt_sharp_password); 
            }
         });
 

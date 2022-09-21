@@ -135,12 +135,6 @@
         </tr>
         <tr>
             <td></td>
-            <td>Other Printer</td>
-            <td>:</td>
-            <td><?= $others_password; ?></td>
-        </tr>
-        <tr>
-            <td></td>
             <td>Sharp Printer</td>
             <td>:</td>
             <td><?= $sharp_password; ?></td>

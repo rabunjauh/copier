@@ -46,7 +46,6 @@
 				<td>
 					<a href="<?=base_url() . "c_user/modify_user/" . $user->id; ?>"><i class="fa fa-edit fa-2x tooltips"></i></a>
 					<a href="<?=base_url() . "c_user/change_password/" . $user->id; ?>"><i class="fa fa-key fa-2x tooltips"></i></a>
-					<!-- <a href="<?=base_url() . "c_user/delete_user/" . $user->id; ?>" id="delete_button"><i class="fa fa-trash-o fa-2x tooltips"></i></a> -->
 					<a href="<?=base_url() . "c_user/delete_user/" . $user->id; ?>" data-userId="<?= $user->id ?>" id="delete_button"><i class="fa fa-trash-o fa-2x tooltips"></i></a>
 					<a href="<?=base_url() . "c_user/check/" . $user->id; ?>"><?= $check_icon ?></a>
 				</td>
