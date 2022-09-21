@@ -31,7 +31,7 @@ class m_copier_registration extends CI_Model {
 
         if (isset($_POST['search']['value'])) {
             $this->db->group_start();
-            $this->db->like('idemployee', $_POST['search']['value']);
+            $this->db->like('c.idemployee', $_POST['search']['value']);
             $this->db->or_like('c.employeename', $_POST['search']['value']);
             $this->db->or_like('td.deptdesc', $_POST['search']['value']);
             $this->db->or_like('tp.positiondesc', $_POST['search']['value']);
@@ -87,7 +87,8 @@ class m_copier_registration extends CI_Model {
         $this->db->where('c.id', $id);
         return $this->db->get('copier_id c')->row();
     }
-
+   
+    
    
     public function count_filtered_registration_data() {
         $this->_get_data_registration_query();    
@@ -306,20 +307,97 @@ class m_copier_registration extends CI_Model {
         return $this->db->get('copier_id')->result();
     }
 
-    public function update_copier_data($email, $id, $oldest = null) {
+    public function get_unduplicated_copiers() {
+        $query = $this->db->query('SELECT email FROM copier_id WHERE id IN (SELECT MAX(id) FROM copier_id GROUP BY email)');
+        return $query->result();
+    }
+
+    public function update_copier_data($email, $id) {
         
         $data =  [
             'ldap_id' => $id
         ];
 
-        if($oldest) {
-            $this->db->where_not_in('email', $oldest);
-        }
+        // if($oldest) {
+            // $this->db->where_not_in('id', $oldest);
+        // }
         
         $this->db->where('email', $email);
         $this->db->update('copier_id', $data);
         if ($this->db->affected_rows() == 1) {
             return $this->db->insert_id();
         }
+    }
+
+    private function _get_email_recipients_query($id) {
+        $this->db->select('
+            c.id,
+            c.sharp_password,
+            c.others_password,
+            c.idemployee,
+            c.employeename,
+            c.email,
+            c.ldap_id,       
+            td.deptdesc,
+            tp.positiondesc,
+            l.ldap_email,
+            l.name,
+            l.department,
+            l.position
+        ');
+
+        $this->db->join('tblfile_department td', 'td.iddept = c.iddept', 'left');
+        $this->db->join('tblfile_position tp', 'tp.idposition = c.idposition', 'left');
+        $this->db->join('ldap_users l', 'l.id = c.ldap_id', 'left');
+        
+
+        if (isset($_POST['search']['value'])) {
+            $this->db->group_start();
+            $this->db->like('c.idemployee', $_POST['search']['value']);
+            $this->db->or_like('c.employeename', $_POST['search']['value']);
+            $this->db->or_like('td.deptdesc', $_POST['search']['value']);
+            $this->db->or_like('tp.positiondesc', $_POST['search']['value']);
+            $this->db->or_like('c.email', $_POST['search']['value']);
+            $this->db->or_like('l.ldap_email', $_POST['search']['value']);
+            $this->db->or_like('l.name', $_POST['search']['value']);
+            $this->db->or_like('l.department', $_POST['search']['value']);
+            $this->db->or_like('l.position', $_POST['search']['value']);
+            $this->db->group_end();
+        }
+
+        $this->db->where_in('c.id', $id);
+
+        if (isset($_POST['order'])) {
+            $this->db->order_by($this->order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+        } else {
+            $this->db->order_by('c.idemployee', 'DESC');
+        }
+        
+    }
+
+    public function get_email_recipients($id) {
+        $this->_get_email_recipients_query($id);
+        
+        if (isset($_POST['length']) && $_POST['length'] >= 1) {
+            $this->db->limit($_POST['length'], $_POST['start']);
+        }
+        
+        return $this->db->get('copier_id c')->result();
+   }
+
+   
+    public function count_filtered_recipients($id) {
+        $this->_get_email_recipients_query($id);    
+        
+        $this->db->from('copier_id c');
+        $query = $this->db->get();
+        return $query->num_rows();
+    }
+
+    public function count_all_recipients() {
+        $this->db->select('*');
+        $this->db->from('copier_id');
+        
+        return $this->db->count_all_results();
     }
 }

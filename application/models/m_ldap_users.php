@@ -53,7 +53,7 @@ class M_ldap_users extends CI_Model {
         return $this->db->count_all_results($this->table);
     }
 
-    public function getLdapUsers($email) {
+    public function get_ldap_user($email) {
         return $this->db->get_where('ldap_users', ['ldap_email' => $email])->row();
     }
 
@@ -80,7 +80,7 @@ class M_ldap_users extends CI_Model {
     }
 
     public function get_duplicate() {
-        $query = $this->db->query('SELECT email, COUNT(email) FROM copier_id GROUP BY email HAVING COUNT(email) > 1');
+        $query = $this->db->query('SELECT email, id, COUNT(email) FROM copier_id GROUP BY email HAVING COUNT(email) > 1');
 
         return $query->result();
     }

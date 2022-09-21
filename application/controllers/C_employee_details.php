@@ -52,6 +52,7 @@ class C_employee_details extends CI_Controller {
 			}
 			$id = $copier_registration->id;
 			$row =  array();
+			$row[] = $id;
 			$row[] = ++$no;
 			$row[] = $copier_registration->idemployee;
 			$row[] = $copier_registration->sharp_password;
@@ -60,7 +61,6 @@ class C_employee_details extends CI_Controller {
 			$row[] = $deptdesc;
 			$row[] = $positiondesc;
 			$row[] = $email;
-			$row[] = $id;
 			$data[] = $row;
 		}
 
@@ -273,124 +273,209 @@ class C_employee_details extends CI_Controller {
 		echo json_encode($data);
 	}
 	
-    public function send_email_employee_details($id) {
-		$employee = $this->m_copier_registration->get_registration_by_id($id);
+    // public function send_email_employee_details($id) {
+	// 	$employee = $this->m_copier_registration->get_registration_by_id($id);
+	// 	$admin = $this->m_user->get_users();
+	// 	$this->load->library('email');
+    //     $sender = 'no-reply@wascoenergy.com';
+    //     $pass = 'password.88';
+	// 	$data = [];
+	// 	$data['username'] = ($employee->ldap_id === null) ? $employee->email : $employee->ldap_email;
+	// 	$data['recipient'] = ($employee->ldap_id === null) ? $employee->email : $employee->ldap_email . '@wascoenergy.com';
+	// 	$data['sender'] = 'no-reply@wascoenergy.com';
+	// 	$data['idemployee'] = $employee->idemployee;
+	// 	$data['employeename'] = ($employee->ldap_id === null) ? $employee->employeename : $employee->name;
+	// 	$data['deptdesc'] = ($employee->ldap_id === null) ? $employee->deptdesc : $employee->department;
+	// 	$data['positiondesc'] = ($employee->ldap_id === null) ? $employee->positiondesc : $employee->position;
+	// 	$data['others_password'] = $employee->others_password;
+	// 	$data['sharp_password'] = $employee->sharp_password;
+	// 	$config = [];
+	// 	$config['protocol'] = 'smtp';
+	// 	$config['charset'] = 'iso-8859-1';
+	// 	$config['wordwrap'] = FALSE;
+	// 	$config['smtp_host'] = 'smtp-relay.wascoenergy.com';
+	// 	$config['smtp_user'] = $sender;
+	// 	$config['smtp_pass'] = $pass;
+	// 	$config['smtp_port'] = '587';
+	// 	$config['smtp_crypto'] = 'tls';
+	// 	$config['newline'] = "\r\n";
+	// 	$config['mailtype'] = 'html';
+
+	// 	$this->email->initialize($config);			
+	// 	$this->email->from($sender, 'WEI MIS');
+	// 	$this->email->to((($employee->ldap_id === null) ? $employee->email : $employee->ldap_email) . '@wascoenergy.com');
+		
+	// 	$is_cc = [];
+	// 	foreach ($admin as $list) {
+	// 		$is_cc[] = $list->email;
+	// 	}
+
+	// 	function modify($str) {
+	// 		return $str . '@wascoenergy.com';
+	// 	}
+
+	// 	$list_admin = array_map('modify', $is_cc);
+	// 	$this->email->cc(join(", ", $list_admin));
+	// 	// $this->email->cc('wahyu.maulana@wascoenergy.com, ichwan.maulana@wascoenergy.com, mustafa.m@wascoenergy.com');
+	// 	$this->email->subject('Employee Details');
+	// 	$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-to-Create-Timesheet.pdf");
+	// 	$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-Input-Password-Printer-Sharp.pdf");
+	// 	$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-Scan-Doc-Machine-Printer-Sharp.pdf");
+	// 	$this->email->message($this->load->view('contents/message_body', $data, TRUE));
+	// 	if ($this->email->send()) {
+	// 		$message = '<div class="alert alert-success">Employee Details sent to ' . $data['recipient'] . ' successfully</div>';
+    //         $this->session->set_flashdata('message', $message);
+    //         redirect(base_url('c_employee_details'));
+	// 	} else {
+	// 		$message = '<div class="alert alert-danger">Employee Details was not sent!</div>';
+    //         $this->session->set_flashdata('message', $message);
+    //         redirect(base_url('c_employee_details'));
+	// 	}
+	// }
+
+    public function send_email_employee_details() {
 		$admin = $this->m_user->get_users();
 		$this->load->library('email');
         $sender = 'no-reply@wascoenergy.com';
         $pass = 'password.88';
-		$data = [];
-		$data['username'] = ($employee->ldap_id === null) ? $employee->email : $employee->ldap_email;
-		$data['recipient'] = ($employee->ldap_id === null) ? $employee->email : $employee->ldap_email . '@wascoenergy.com';
-		$data['sender'] = 'no-reply@wascoenergy.com';
-		$data['idemployee'] = $employee->idemployee;
-		$data['employeename'] = ($employee->ldap_id === null) ? $employee->employeename : $employee->name;
-		$data['deptdesc'] = ($employee->ldap_id === null) ? $employee->deptdesc : $employee->department;
-		$data['positiondesc'] = ($employee->ldap_id === null) ? $employee->positiondesc : $employee->position;
-		$data['others_password'] = $employee->others_password;
-		$data['sharp_password'] = $employee->sharp_password;
-		$config = [];
-		$config['protocol'] = 'smtp';
-		$config['charset'] = 'iso-8859-1';
-		$config['wordwrap'] = FALSE;
-		$config['smtp_host'] = 'smtp-relay.wascoenergy.com';
-		$config['smtp_user'] = $sender;
-		$config['smtp_pass'] = $pass;
-		$config['smtp_port'] = '587';
-		$config['smtp_crypto'] = 'tls';
-		$config['newline'] = "\r\n";
-		$config['mailtype'] = 'html';
-
-		$this->email->initialize($config);			
-		$this->email->from($sender, 'WEI MIS');
-		$this->email->to((($employee->ldap_id === null) ? $employee->email : $employee->ldap_email) . '@wascoenergy.com');
-		
-		$is_cc = [];
-		foreach ($admin as $list) {
-			$is_cc[] = $list->email;
-		}
-
+		$id = $this->input->post();
+		$sent_emails = [];
+		$failed_emails = [];
+		// var_dump($id['postData']);die;
+		// $id = ['18', '207'];
 		function modify($str) {
 			return $str . '@wascoenergy.com';
-		}
+		} 
+		$employees = $this->m_copier_registration->get_email_recipients($id['postData']);
+		foreach($employees as $employee) {
+			$data = [];
+			$data['username'] = ($employee->ldap_id === null) ? $employee->email : $employee->ldap_email;
+			$data['recipient'] = ($employee->ldap_id === null) ? $employee->email : $employee->ldap_email . '@wascoenergy.com';
+			$data['sender'] = 'no-reply@wascoenergy.com';
+			$data['idemployee'] = $employee->idemployee;
+			$data['employeename'] = ($employee->ldap_id === null) ? $employee->employeename : $employee->name;
+			$data['deptdesc'] = ($employee->ldap_id === null) ? $employee->deptdesc : $employee->department;
+			$data['positiondesc'] = ($employee->ldap_id === null) ? $employee->positiondesc : $employee->position;
+			$data['others_password'] = $employee->others_password;
+			$data['sharp_password'] = $employee->sharp_password;
+			$config = [];
+			$config['protocol'] = 'smtp';
+			$config['charset'] = 'iso-8859-1';
+			$config['wordwrap'] = FALSE;
+			$config['smtp_host'] = 'smtp-relay.wascoenergy.com';
+			$config['smtp_user'] = $sender;
+			$config['smtp_pass'] = $pass;
+			$config['smtp_port'] = '587';
+			$config['smtp_crypto'] = 'tls';
+			$config['newline'] = "\r\n";
+			$config['mailtype'] = 'html';
 
-		$list_admin = array_map('modify', $is_cc);
-		$this->email->cc(join(", ", $list_admin));
-		// $this->email->cc('wahyu.maulana@wascoenergy.com, ichwan.maulana@wascoenergy.com, mustafa.m@wascoenergy.com');
-		$this->email->subject('Employee Details');
-		$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-to-Create-Timesheet.pdf");
-		$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-Input-Password-Printer-Sharp.pdf");
-		$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-Scan-Doc-Machine-Printer-Sharp.pdf");
-		$this->email->message($this->load->view('contents/message_body', $data, TRUE));
-		if ($this->email->send()) {
-			$message = '<div class="alert alert-success">Employee Details sent to ' . $data['recipient'] . ' successfully</div>';
-            $this->session->set_flashdata('message', $message);
-            redirect(base_url('c_employee_details'));
-		} else {
-			$message = '<div class="alert alert-danger">Employee Details was not sent!</div>';
-            $this->session->set_flashdata('message', $message);
-            redirect(base_url('c_employee_details'));
-		}
-	}
+			$this->email->initialize($config);			
+			$this->email->from($sender, 'WEI MIS');
+			$this->email->to((($employee->ldap_id === null) ? $employee->email : $employee->ldap_email) . '@wascoenergy.com');
+			
+			$is_cc = [];
+			foreach ($admin as $list) {
+				$is_cc[] = $list->email;
+			}
 	
-    public function send_email_sharp_details($id) {
-		$admin = $this->m_user->get_users();
-		$this->load->library('email');
-        $sender = 'no-reply@wascoenergy.com';
-        $pass = 'password.88';
-		$employee = $this->m_copier_registration->get_registration_by_id($id);
-		$data = [];
-		$data['recipient'] = ($employee->ldap_id === null) ? $employee->email : $employee->ldap_email . '@wascoenergy.com';
-		$data['sender'] = $sender;
-		$data['idemployee'] = $employee->idemployee;
-		$data['employeename'] = ($employee->ldap_id === null ) ? $employee->employeename : $employee->name;
-		$data['deptdesc'] =($employee->ldap_id === null ) ?  $employee->deptdesc : $employee->department;
-		$data['positiondesc'] = ($employee->ldap_id === null ) ? $employee->positiondesc : $employee->position;
-		$data['others_password'] = $employee->others_password;
-		$data['sharp_password'] = $employee->sharp_password;
-		$config = [];
-		$config['protocol'] = 'smtp';
-		$config['charset'] = 'utf-8';
-		$config['wordwrap'] = FALSE;
-		$config['smtp_host'] = 'smtp-relay.wascoenergy.com';
-		$config['smtp_user'] = $sender;
-		$config['smtp_pass'] = $pass;
-		$config['smtp_port'] = '587';
-		$config['smtp_crypto'] = 'tls';
-		$config['newline'] = "\r\n";
-		$config['mailtype'] = 'html';
-        
-		$this->email->initialize($config);	
-
-		$this->email->from($sender, 'WEI MIS');
-		$this->email->to((($employee->ldap_id === null) ? $employee->email : $employee->ldap_email) . '@wascoenergy.com');
-
-		$is_cc = [];
-		foreach ($admin as $list) {
-			$is_cc[] = $list->email;
+			// function modifying($str) {
+			// 	return $str . '@wascoenergy.com';
+			// }
+	
+			$list_admin = array_map('modify', $is_cc);
+			$this->email->cc(join(", ", $list_admin));
+			// $this->email->cc('wahyu.maulana@wascoenergy.com, ichwan.maulana@wascoenergy.com, mustafa.m@wascoenergy.com');
+			$this->email->subject('Employee Details');
+			// $this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-to-Create-Timesheet.pdf");
+			// $this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-Input-Password-Printer-Sharp.pdf");
+			// $this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-Scan-Doc-Machine-Printer-Sharp.pdf");
+			$this->email->message($this->load->view('contents/message_body', $data, TRUE));
+			if ($this->email->send()) {
+				array_push($sent_emails, $employee->name);
+			} else {
+				array_push($failed_emails, $employee->name);
+			}
+			// } else {
+			// 	$message = '<div class="alert alert-danger">Sharp Detail was not sent!</div>';
+			// 	$this->session->set_flashdata('message', $message);
+			// 	redirect(base_url('c_employee_details'));
+			// }
 		}
-
-		function modifying($str) {
-			return $str . '@wascoenergy.com';
-		}
-
-		$list_admin = array_map('modifying', $is_cc);
-		$this->email->cc(join(", ", $list_admin));
-
-		// $this->email->cc('wahyu.maulana@wascoenergy.com, mustafa.m@wascoenergy.com, ichwan.maulana@wascoenergy.com');
-		$this->email->subject('Sharp Printer Details');
-      		$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-to-Create-Timesheet.pdf");
-		$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-Input-Password-Printer-Sharp.pdf");
-		$this->email->message($this->load->view('contents/message_body_printer', $data, TRUE));
-		if ($this->email->send()) {
-			$message = '<div class="alert alert-success">Sharp Detail sent to ' . $data['recipient'] . ' successfully</div>';
-            $this->session->set_flashdata('message', $message);
-            redirect(base_url('c_employee_details'));
+		if(count($id['postData']) === count($sent_emails)) {
+			// $output = [
+			// 	"status" => "success",
+			// 	"data" => $sent_emails
+			// ];
+			echo "Email has been sent to " . join(", ", $sent_emails);
 		} else {
-			$message = '<div class="alert alert-danger">Sharp Detail was not sent!</div>';
-            $this->session->set_flashdata('message', $message);
-            redirect(base_url('c_employee_details'));
+			// $output = [
+			// 	"status" => "fail",
+			// 	"data" => $failed_emails
+			// ];
+			echo "Sending Email to " . join(", ", $failed_emails) . "was failed";
 		}
+
+		// echo $output;
+ 
+    // public function send_email_sharp_details($id) {
+	// 	$admin = $this->m_user->get_users();
+	// 	$this->load->library('email');
+    //     $sender = 'no-reply@wascoenergy.com';
+    //     $pass = 'password.88';
+	// 	$employee = $this->m_copier_registration->get_registration_by_id($id);
+	// 	$data = [];
+	// 	$data['recipient'] = ($employee->ldap_id === null) ? $employee->email : $employee->ldap_email . '@wascoenergy.com';
+	// 	$data['sender'] = $sender;
+	// 	$data['idemployee'] = $employee->idemployee;
+	// 	$data['employeename'] = ($employee->ldap_id === null ) ? $employee->employeename : $employee->name;
+	// 	$data['deptdesc'] =($employee->ldap_id === null ) ?  $employee->deptdesc : $employee->department;
+	// 	$data['positiondesc'] = ($employee->ldap_id === null ) ? $employee->positiondesc : $employee->position;
+	// 	$data['others_password'] = $employee->others_password;
+	// 	$data['sharp_password'] = $employee->sharp_password;
+	// 	$config = [];
+	// 	$config['protocol'] = 'smtp';
+	// 	$config['charset'] = 'utf-8';
+	// 	$config['wordwrap'] = FALSE;
+	// 	$config['smtp_host'] = 'smtp-relay.wascoenergy.com';
+	// 	$config['smtp_user'] = $sender;
+	// 	$config['smtp_pass'] = $pass;
+	// 	$config['smtp_port'] = '587';
+	// 	$config['smtp_crypto'] = 'tls';
+	// 	$config['newline'] = "\r\n";
+	// 	$config['mailtype'] = 'html';
+        
+	// 	$this->email->initialize($config);	
+
+	// 	$this->email->from($sender, 'WEI MIS');
+	// 	$this->email->to((($employee->ldap_id === null) ? $employee->email : $employee->ldap_email) . '@wascoenergy.com');
+
+	// 	$is_cc = [];
+	// 	foreach ($admin as $list) {
+	// 		$is_cc[] = $list->email;
+	// 	}
+
+	// 	function modifying($str) {
+	// 		return $str . '@wascoenergy.com';
+	// 	}
+
+	// 	$list_admin = array_map('modifying', $is_cc);
+	// 	$this->email->cc(join(", ", $list_admin));
+
+	// 	// $this->email->cc('wahyu.maulana@wascoenergy.com, mustafa.m@wascoenergy.com, ichwan.maulana@wascoenergy.com');
+	// 	$this->email->subject('Sharp Printer Details');
+    //   		$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-to-Create-Timesheet.pdf");
+	// 	$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-Input-Password-Printer-Sharp.pdf");
+	// 	$this->email->message($this->load->view('contents/message_body_printer', $data, TRUE));
+	// 	if ($this->email->send()) {
+	// 		$message = '<div class="alert alert-success">Sharp Detail sent to ' . $data['recipient'] . ' successfully</div>';
+    //         $this->session->set_flashdata('message', $message);
+    //         redirect(base_url('c_employee_details'));
+	// 	} else {
+	// 		$message = '<div class="alert alert-danger">Sharp Detail was not sent!</div>';
+    //         $this->session->set_flashdata('message', $message);
+    //         redirect(base_url('c_employee_details'));
+	// 	}
 	}
 
 	public function get_department() {
@@ -585,10 +670,6 @@ class C_employee_details extends CI_Controller {
 		$this->load->view('main', $data);
 	}
 
-	public function tes ($tesParameter) {
-		echo $tesParameter;
-	}
-
 	public function ldap_users() {
 		$this->WEI();
 		$this->WEIL();
@@ -749,7 +830,7 @@ class C_employee_details extends CI_Controller {
 	public function save_ldap_users($entries) {
 		foreach($entries as $entry) {
 			$ldap_user['ldap_email'] = $entry['samaccountname'][0];
-			$ldap_users = $this->m_ldap_users->getLdapUsers($ldap_user['ldap_email']);
+			$ldap_users = $this->m_ldap_users->get_ldap_user($ldap_user['ldap_email']);
 			if(!$ldap_users) {
 				$ldap_user['name'] = $entry['displayname'][0];
 				$department = $this->verify_department($entry['department'][0]);
@@ -916,24 +997,28 @@ class C_employee_details extends CI_Controller {
 	}
 
 	public function update_copier() {
-		$copiers = $this->m_copier_registration->get_existing_copier();
-		foreach($copiers as $copier) {
-			$existing_email = $copier->email;
+		// $copiers = $this->m_copier_registration->get_existing_copier();
+		$unduplicated_copiers = $this->m_copier_registration->get_unduplicated_copiers();
+		foreach($unduplicated_copiers as $unduplicated_copier) {
+			$existing_email = $unduplicated_copier->email;
 			echo "Existing email: " . $existing_email;
-			echo "</>";
-			$ldap_users = $this->m_ldap_users->getLdapUsers($existing_email);
-			if($ldap_users) {
-				$duplicate = $this->m_ldap_users->get_duplicate();
-				if ($duplicate) {
-					foreach($duplicate as $value) {
-						$oldest = $this->m_ldap_users->get_old_duplicate($value->email);
-						$oldest_data_id = $oldest['email'];
-						echo "oldest: " . $oldest_data_id;
-						echo "</br>";
-					}
-				}
-				$ldap_id = $ldap_users->id;
-				// $this->m_copier_registration->update_copier_data($existing_email, $ldap_id, $oldest_data_id);
+			echo "<br>";
+			$ldap_user = $this->m_ldap_users->get_ldap_user($existing_email);
+			if($ldap_user) {
+
+				// $oldest_duplicate = $this->m_ldap_users->get_old_duplicate($existing_email);
+				// $old_id =  $oldest_duplicate['id'];
+				// echo "oldest duplicate:" . $oldest_duplicate['email'];
+				// $duplicate = $this->m_ldap_users->get_duplicate();
+				// if ($duplicate) {
+				// 	foreach($duplicate as $value) {
+						// $oldest_data_id = $oldest['email'];
+						// echo "oldest: " . $oldest_data_id;
+						// echo "</br>";
+					// }
+				// }
+				$ldap_id = $ldap_user->id;
+				$this->m_copier_registration->update_copier_data($existing_email, $ldap_id);
 			}
 		}
 		// $double = $this->m_ldap_users->get_double();
@@ -948,6 +1033,49 @@ class C_employee_details extends CI_Controller {
 		
 	}
 
+	public function verify_recipient() {
+		$id = $this->input->post('data');
+		$id = explode(",", $id);
+		$recipients = $this->m_copier_registration->get_email_recipients($id);
+		$no = $_POST['start'];
+		foreach ($recipients as $recipient) {
+			if ($recipient->ldap_id === null || $recipient->name === null){
+				$employeename = $recipient->employeename;
+				$deptdesc = $recipient->deptdesc;
+				$positiondesc = $recipient->positiondesc;
+				$email = $recipient->email;
+			} else {
+				$employeename = $recipient->name;
+				$deptdesc = $recipient->department;
+				$positiondesc = $recipient->position;
+				$email = $recipient->ldap_email;
+			}
+			$row = [];
+			$row[] = ++$no;
+			$row[] = $employeename;
+			$row[] = $deptdesc;
+			$row[] = $positiondesc;
+			$row[] = $email;
+			$data[] = $row;
+		}
+
+		if (isset($data)) {
+			$output = array(
+				"draw" => $_POST['draw'],
+				"recordsTotal" => $this->m_copier_registration->count_all_recipients($id),
+				"recordsFiltered" => $this->m_copier_registration->count_filtered_recipients($id),
+				"data" => $data
+			);
+		} else {
+			$output = array(
+				"draw" => $_POST['draw'],
+				"recordsTotal" => $this->m_copier_registration->count_all_recipients($id),
+				"recordsFiltered" => $this->m_copier_registration->count_filtered_recipients($id),
+				"data" => array()
+			);
+		}
+		$this->output->set_content_type('application/json')->set_output(json_encode($output));
+	}
 }
 
 	

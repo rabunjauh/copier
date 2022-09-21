@@ -19,6 +19,7 @@
             <table class="table table-bordered" id="registrationData">
                 <thead>
                     <tr>
+                        <th></th>
                         <th>No</th>
                         <th>Employee ID</th>
                         <th>Sharp Password</th>
@@ -27,7 +28,6 @@
                         <th>Department</th>
                         <th>Job Title</th>
                         <th>Email</th>
-                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -38,11 +38,11 @@
 	    </div>
 	</div>
 
-    <div class="row">
-        <div class="col-lg-12">
-            <button id="button_send_email" name="button_send_email" class="btn btn-primary">Send Email</button>
-        </div>
-    </div>
+<!-- Button trigger modal -->
+<button id = "verify_recipient_button" type="button" class="btn btn-primary" data-toggle="modal" data-target="#verify_recipient">
+  Send Email
+</button>
+    <hr>
 </div>	
 
  <!-- Modal -->
@@ -92,40 +92,98 @@
     </div>
 </div>
 
+<!-- Verify Recipient Modal -->
+<div class="modal fade" id="verify_recipient" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Verify Recipients</h4>
+      </div>
+      <div class="modal-body">
+      <table class="table table-bordered" id="verify_email_data">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Employee Name</th>
+                        <th>Department</th>
+                        <th>Job Title</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                </tbody>
+            </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button id="send_button" type="button" class="btn btn-primary" data-dismiss="modal">Send</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
-    
-
-    // confirmation(employeeSending);
-    // confirmation(sharpSending);
-
-    // function confirmation(elementTarget) {
-    //     elementTarget.addEventListener('click', function(event) {
-    //         event.preventDefault();
-    //         console.log(elementTarget.href);
-    //         if (confirm('Click ok to continue')) {
-    //             window.location.replace(elementTarget.href);
-    //         } else {
-    //             event.preventDefault();
-    //         }
-    //     });
-    // }
-
-   
     $(document).ready(function(){
-        $('#registrationData').DataTable({
+        const table = $('#registrationData').DataTable({
             // "deferRender": true,
-                "processing": true,
-                "serverSide": true,
-                "order": [],
+                processing: true,
+                serverSide: true,
                 ajax: {
                     "url": "<?= base_url('c_employee_details/get_registration_data'); ?>",
                     "type": "POST"
                 },
-                "columnDefs": [{
-                    "targets": [7],
-                    "orderable": false
+                "initComplete": function( setting, json) {
+                    const send_button = document.getElementById('button_send');
+                    const verify_recipient_button = document.getElementById('verify_recipient_button');
+                    verify_recipient_button.addEventListener("click", function (){
+                        const checkData = table.column(0).checkboxes.selected();
+                        let arrData = [];
+                        checkData.map(data => {
+                            arrData.push(data);
+                        });
+
+                        $('#verify_email_data').DataTable({
+                            destroy: true,
+                            "deferRender": true,
+                            "processing": true,
+                            "serverSide": true,
+                            "order": [],
+                            ajax: {
+                                "url": "<?= base_url('c_employee_details/verify_recipient/'); ?>",
+                                "type": "POST",
+                                "data": {data: arrData.join(',')}
+                            },
+                            "initComplete": function( setting, json) {
+                                const send_button = document.getElementById('send_button');
+                                send_button.addEventListener('click', function() {
+                                $.post('<?= base_url('c_employee_details/send_email_employee_details')?>', {'postData[]': arrData})
+                                    .done(function(data, status){
+                                        window.alert(data);
+                                        window.location = '<?= base_url('c_employee_details') ?>';
+                                    });
+                                }); 
+                            },
+                            "columnDefs": [{
+                                "targets": [4],
+                                "orderable": false
+                            }]
+                        });
+                    });
+                },
+                columnDefs: [{
+                    'targets': 0,
+                    'checkboxes': {
+                        'selectRow': true
+                    }
                 }],
+                'select': {
+                    'style': 'multi',
+                },
+                'order': [[1, 'asc']],
                 columns: [
+                    
                     {
                         data: 0
                     },
@@ -151,14 +209,9 @@
                         data: 7
                     },
                     {
-                        data: 8,
-                        render: function(data, type, full, meta) {
-                            const row_check = '<input type="checkbox" id="row" name="row" value="' + data + '">';
-                            return row_check;
-                            // return '<center?>' + sendEmployeeDetailBtn + '&nbsp;' +  sendPrinterDetailBtn + '&nbsp;' + modifyCopierRegisterBtn + ' </center>';
-                        }
+                        data: 8
                     }
-                ]
+                ],
         });
     });
 
@@ -180,7 +233,6 @@
         }
         
     });
-
 
     window.addEventListener('load', function(){
         // get data from ldap
