@@ -9,8 +9,11 @@
 
 		.nav{
 		margin-top: 10px 10px 10px 10px;
+		}
 
-	}
+		#loading {
+			display: none;
+		}
 	
 	</style>
 	<link rel="stylesheet" type="text/css" href="style_print.css">

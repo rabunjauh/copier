@@ -212,6 +212,11 @@ class C_employee_details extends CI_Controller {
 		function modify($str) {
 			return $str . '@wascoenergy.com';
 		} 
+
+		$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-to-Create-Timesheet.pdf");
+		$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-Input-Password-Printer-Sharp.pdf");
+		$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-Scan-Doc-Machine-Printer-Sharp.pdf");
+
 		$employees = $this->m_copier_registration->get_email_recipients($id['postData']);
 		foreach($employees as $employee) {
 			$data = [];
@@ -248,9 +253,6 @@ class C_employee_details extends CI_Controller {
 			$list_admin = array_map('modify', $is_cc);
 			$this->email->cc(join(", ", $list_admin));
 			$this->email->subject('Employee Details');
-			$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-to-Create-Timesheet.pdf");
-			$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-Input-Password-Printer-Sharp.pdf");
-			$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-Scan-Doc-Machine-Printer-Sharp.pdf");
 			$this->email->message($this->load->view('contents/message_body', $data, TRUE));
 			if ($this->email->send()) {
 				array_push($sent_emails, $employee->name);

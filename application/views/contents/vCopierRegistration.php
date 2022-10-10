@@ -13,6 +13,12 @@
             </button>
 		</div>
 	</div>	
+    <br>
+    <div class="row">
+        <div id="loading" class="col-lg-12">
+            <p class="alert alert-success">Sending emails...</p>
+        </div>
+    </div>
 	<hr>
 	<div class="row">
 		<div class="col-lg-12">
@@ -159,8 +165,11 @@
                             "initComplete": function( setting, json) {
                                 const send_button = document.getElementById('send_button');
                                 send_button.addEventListener('click', function() {
+                                const loading = document.getElementById('loading');
+                                loading.style.display = 'inline';
                                 $.post('<?= base_url('c_employee_details/send_email_employee_details')?>', {'postData[]': arrData})
                                     .done(function(data, status){
+                                        loading.style.display = 'none';
                                         window.alert(data);
                                         window.location = '<?= base_url('c_employee_details') ?>';
                                     });
@@ -191,13 +200,22 @@
                         data: 1
                     },
                     {
-                        data: 2
+                        data: 2,
+                        render: function(data, type, full, meta) {
+                            return `${data}<p class="text-right"><span class="text-right"><button class="btn btn-primary"><i class="fa fa-edit fa"></i></button></span></p>`;
+                        }
                     },
                     {
-                        data: 3
+                        data: 3,
+                        render: function(data, type, full, meta) {
+                            return `${data} <button class="btn btn-primary"><i class="fa fa-edit fa"></i></button>`;
+                        }
                     },
                     {
-                        data: 4
+                        data: 4,
+                        render: function(data, type, full, meta) {
+                            return `${data} <button class="btn btn-primary"><i class="fa fa-edit fa"></i></button>`;
+                        }
                     },
                     {
                         data: 5
