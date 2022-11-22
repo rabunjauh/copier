@@ -200,22 +200,13 @@
                         data: 1
                     },
                     {
-                        data: 2,
-                        render: function(data, type, full, meta) {
-                            return `${data}<p class="text-right"><span class="text-right"><button class="btn btn-primary"><i class="fa fa-edit fa"></i></button></span></p>`;
-                        }
+                        data: 2
                     },
                     {
-                        data: 3,
-                        render: function(data, type, full, meta) {
-                            return `${data} <button class="btn btn-primary"><i class="fa fa-edit fa"></i></button>`;
-                        }
+                        data: 3
                     },
                     {
-                        data: 4,
-                        render: function(data, type, full, meta) {
-                            return `${data} <button class="btn btn-primary"><i class="fa fa-edit fa"></i></button>`;
-                        }
+                        data: 4
                     },
                     {
                         data: 5

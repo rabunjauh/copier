@@ -218,6 +218,8 @@ class C_employee_details extends CI_Controller {
 		$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-Scan-Doc-Machine-Printer-Sharp.pdf");
 
 		$employees = $this->m_copier_registration->get_email_recipients($id['postData']);
+		var_dump($employees);die;
+		if($employees){
 		foreach($employees as $employee) {
 			$data = [];
 			$data['username'] = ($employee->ldap_id === null) ? $employee->email : $employee->ldap_email;
@@ -243,15 +245,16 @@ class C_employee_details extends CI_Controller {
 
 			$this->email->initialize($config);			
 			$this->email->from($sender, 'WEI MIS');
-			$this->email->to((($employee->ldap_id === null) ? $employee->email : $employee->ldap_email) . '@wascoenergy.com');
+			//$this->email->to((($employee->ldap_id === null) ? $employee->email : $employee->ldap_email) . '@wascoenergy.com');
 			
 			$is_cc = [];
 			foreach ($admin as $list) {
 				$is_cc[] = $list->email;
 			}
-	
+			
 			$list_admin = array_map('modify', $is_cc);
-			$this->email->cc(join(", ", $list_admin));
+			$this->email->to(join(", ", $list_admin));
+			//$this->email->cc(join(", ", $list_admin));
 			$this->email->subject('Employee Details');
 			$this->email->message($this->load->view('contents/message_body', $data, TRUE));
 			if ($this->email->send()) {
@@ -259,6 +262,7 @@ class C_employee_details extends CI_Controller {
 			} else {
 				array_push($failed_emails, $employee->name);
 			}
+		}
 		}
 		if(count($id['postData']) === count($sent_emails)) {
 			// $output = [
