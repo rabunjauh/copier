@@ -46,7 +46,7 @@
 	</div>
 
 <!-- Button trigger modal -->
-<button id = "verify_recipient_button" type="button" class="btn btn-primary" data-toggle="modal" data-target="#verify_recipient">
+<button id = "verify_recipient_button" type="button" class="btn btn-primary" data-toggle="modal" data-target="#verify_recipient" disabled>
   Send Email
 </button>
     <hr>
@@ -144,6 +144,15 @@
                 "initComplete": function( setting, json) {
                     const send_button = document.getElementById('button_send');
                     const verify_recipient_button = document.getElementById('verify_recipient_button');
+		            $("#registrationData").on('change',"input[type='checkbox']",function(e){
+                        const checkData = table.column(0).checkboxes.selected();
+                        if(checkData.length > 0) {
+                            verify_recipient_button.disabled = false;
+                        } else {
+                            verify_recipient_button.disabled = true;
+                        } 
+                    });
+		
                     verify_recipient_button.addEventListener("click", function (){
                         const checkData = table.column(0).checkboxes.selected();
                         let arrData = [];

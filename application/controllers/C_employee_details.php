@@ -201,7 +201,7 @@ class C_employee_details extends CI_Controller {
 		echo json_encode($data);
 	}
 	
-    public function send_email_employee_details() {
+  public function send_email_employee_details() {
 		$admin = $this->m_user->get_users();
 		$this->load->library('email');
         $sender = 'no-reply@wascoenergy.com';
@@ -216,72 +216,69 @@ class C_employee_details extends CI_Controller {
 		$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-to-Create-Timesheet.pdf");
 		$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-Input-Password-Printer-Sharp.pdf");
 		$this->email->attach($_SERVER["DOCUMENT_ROOT"]."/copier"."/assets"."/attachment/Guide-Scan-Doc-Machine-Printer-Sharp.pdf");
-
-		$employees = $this->m_copier_registration->get_email_recipients($id['postData']);
-		var_dump($employees);die;
-		if($employees){
-		foreach($employees as $employee) {
-			$data = [];
-			$data['username'] = ($employee->ldap_id === null) ? $employee->email : $employee->ldap_email;
-			$data['recipient'] = ($employee->ldap_id === null) ? $employee->email : $employee->ldap_email . '@wascoenergy.com';
-			$data['sender'] = 'no-reply@wascoenergy.com';
-			$data['idemployee'] = $employee->idemployee;
-			$data['employeename'] = ($employee->ldap_id === null) ? $employee->employeename : $employee->name;
-			$data['deptdesc'] = ($employee->ldap_id === null) ? $employee->deptdesc : $employee->department;
-			$data['positiondesc'] = ($employee->ldap_id === null) ? $employee->positiondesc : $employee->position;
-			$data['others_password'] = $employee->others_password;
-			$data['sharp_password'] = $employee->sharp_password;
-			$config = [];
-			$config['protocol'] = 'smtp';
-			$config['charset'] = 'iso-8859-1';
-			$config['wordwrap'] = FALSE;
-			$config['smtp_host'] = 'smtp-relay.wascoenergy.com';
-			$config['smtp_user'] = $sender;
-			$config['smtp_pass'] = $pass;
-			$config['smtp_port'] = '587';
-			$config['smtp_crypto'] = 'tls';
-			$config['newline'] = "\r\n";
-			$config['mailtype'] = 'html';
-
-			$this->email->initialize($config);			
-			$this->email->from($sender, 'WEI MIS');
-			//$this->email->to((($employee->ldap_id === null) ? $employee->email : $employee->ldap_email) . '@wascoenergy.com');
-			
-			$is_cc = [];
-			foreach ($admin as $list) {
-				$is_cc[] = $list->email;
+		if ($id['postData'] !== null) {
+			$employees = $this->m_copier_registration->get_email_recipients($id['postData']);
+			foreach($employees as $employee) {
+				$data = [];
+				$data['username'] = ($employee->ldap_id === null) ? $employee->email : $employee->ldap_email;
+				$data['recipient'] = ($employee->ldap_id === null) ? $employee->email : $employee->ldap_email . '@wascoenergy.com';
+				$data['sender'] = 'no-reply@wascoenergy.com';
+				$data['idemployee'] = $employee->idemployee;
+				$data['employeename'] = ($employee->ldap_id === null) ? $employee->employeename : $employee->name;
+				$data['deptdesc'] = ($employee->ldap_id === null) ? $employee->deptdesc : $employee->department;
+				$data['positiondesc'] = ($employee->ldap_id === null) ? $employee->positiondesc : $employee->position;
+				$data['others_password'] = $employee->others_password;
+				$data['sharp_password'] = $employee->sharp_password;
+				$config = [];
+				$config['protocol'] = 'smtp';
+				$config['charset'] = 'iso-8859-1';
+				$config['wordwrap'] = FALSE;
+				$config['smtp_host'] = 'smtp-relay.wascoenergy.com';
+				$config['smtp_user'] = $sender;
+				$config['smtp_pass'] = $pass;
+				$config['smtp_port'] = '587';
+				$config['smtp_crypto'] = 'tls';
+				$config['newline'] = "\r\n";
+				$config['mailtype'] = 'html';
+	
+				$this->email->initialize($config);			
+				$this->email->from($sender, 'WEI MIS');
+				$this->email->to((($employee->ldap_id === null) ? $employee->email : $employee->ldap_email) . '@wascoenergy.com');
+				
+				$is_cc = [];
+				foreach ($admin as $list) {
+					$is_cc[] = $list->email;
+				}
+				
+				$list_admin = array_map('modify', $is_cc);
+				// $this->email->to(join(", ", $list_admin));
+				$this->email->cc(join(", ", $list_admin));
+				$this->email->subject('Employee Details');
+				$this->email->message($this->load->view('contents/message_body', $data, TRUE));
+				if ($this->email->send()) {
+					array_push($sent_emails, $employee->name);
+				} else {
+					array_push($failed_emails, $employee->name);
+				}
 			}
-			
-			$list_admin = array_map('modify', $is_cc);
-			$this->email->to(join(", ", $list_admin));
-			//$this->email->cc(join(", ", $list_admin));
-			$this->email->subject('Employee Details');
-			$this->email->message($this->load->view('contents/message_body', $data, TRUE));
-			if ($this->email->send()) {
-				array_push($sent_emails, $employee->name);
+			// }
+			if(count($id['postData']) === count($sent_emails)) {
+				// $output = [
+				// 	"status" => "success",
+				// 	"data" => $sent_emails
+				// ];
+				echo "Email has been sent to " . join(", ", $sent_emails);
 			} else {
-				array_push($failed_emails, $employee->name);
+				// $output = [
+				// 	"status" => "fail",
+				// 	"data" => $failed_emails
+				// ];
+				echo "Sending Email to " . join(", ", $failed_emails) . "was failed";
 			}
 		}
-		}
-		if(count($id['postData']) === count($sent_emails)) {
-			// $output = [
-			// 	"status" => "success",
-			// 	"data" => $sent_emails
-			// ];
-			echo "Email has been sent to " . join(", ", $sent_emails);
-		} else {
-			// $output = [
-			// 	"status" => "fail",
-			// 	"data" => $failed_emails
-			// ];
-			echo "Sending Email to " . join(", ", $failed_emails) . "was failed";
-		}
-
-		// echo $output;
 	}
-
-	public function get_department() {
+  
+public function get_department() {
 		$departments = $this->m_copier_registration->get_department();
 		$option = '';
 		foreach($departments as $department) {

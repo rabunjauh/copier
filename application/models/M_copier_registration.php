@@ -358,6 +358,7 @@ class m_copier_registration extends CI_Model {
     }
 
     public function get_email_recipients($id) {
+        
         $this->_get_email_recipients_query($id);
         
         if (isset($_POST['length']) && $_POST['length'] >= 1) {
