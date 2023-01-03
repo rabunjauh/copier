@@ -1,1 +1,0 @@
-const trPort = document.getElementById('judul');
