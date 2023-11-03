@@ -69,7 +69,7 @@
             <td>2</td>
             <td>Password</td>
             <td>:</td>
-            <td>password.1 <strong>(smallcaps)</strong></td>
+            <td>Password.1 <strong>(Capital P)</strong></td>
         </tr>
         <tr></tr>
         <tr class="head">
@@ -86,7 +86,7 @@
             <td>2</td>
             <td>Password</td>
             <td>:</td>
-            <td>password.1 <strong>(smallcaps)</strong></td>
+            <td>Password.1 <strong>(Capital P)</strong></td>
         </tr>
         <tr></tr>
         <tr class="head">
@@ -158,7 +158,7 @@
             <td>2</td>
             <td>Password</td>
             <td>:</td>
-            <td>password.1 <strong>(smallcaps)</strong></td>
+            <td>Password.1 <strong>(Capital P)</strong></td>
         </tr>
         <tr></tr>
         <tr class="head">
